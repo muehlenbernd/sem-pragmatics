@@ -1,0 +1,43 @@
+{
+  "a_comp": {
+    "v_prc": {
+      "c_HP": 6.2333,
+      "c_LP": 5.8161
+    },
+    "v_apx": {
+      "c_HP": 4.7826,
+      "c_LP": 5.5054
+    }
+  },
+  "a_like": {
+    "v_prc": {
+      "c_HP": 5.2222,
+      "c_LP": 4.8736
+    },
+    "v_apx": {
+      "c_HP": 4.6413,
+      "c_LP": 5.1505
+    }
+  },
+  "a_ped": {
+    "v_prc": {
+      "c_HP": 4.1778,
+      "c_LP": 4.6897
+    },
+    "v_apx": {
+      "c_HP": 3.5435,
+      "c_LP": 3.5484
+    }
+  },
+  "_meta": {
+    "scale": "7-point Likert (1-7, raw, not normalized)",
+    "source": "data/cs1_experiment/processed/experiment1.csv",
+    "n_total": 362,
+    "n_per_condition": {
+      "v_prc_c_HP": 90,
+      "v_prc_c_LP": 87,
+      "v_apx_c_HP": 92,
+      "v_apx_c_LP": 93
+    }
+  }
+}

@@ -1,0 +1,241 @@
+% A simple cycle
+% Author : Jerome Tremblay
+\documentclass{article}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{verbatim}
+\usepackage{verbatim}
+\usepackage{multirow}
+\usepackage[active,tightpage]{preview}
+\usepackage{pgfplots}
+\usetikzlibrary{decorations.text}
+\PreviewEnvironment{minipage}
+\setlength\PreviewBorder{5pt}%
+
+\definecolor{lightgreen}{rgb}{0.7,0.99,0.7}
+\definecolor{lightred}{rgb}{0.99,0.4,0.4}
+\definecolor{lightblue}{rgb}{0.7,0.7,0.99}
+\definecolor{UTred}{rgb}{0.78125,0.3125,0.234375}
+\definecolor{UTblue}{rgb}{0,0.41015625,0.6640625}
+\definecolor{UTbrown}{rgb}{0.56640625,0.41015625,0.2734375}
+\definecolor{UTyellow}{rgb}{0.8203125,0.5859375,0}
+
+\definecolor{middleblue}{rgb}{0.35,0.35,0.85}
+
+\definecolor{darkgreen}{rgb}{0.0,0.67,0.0}
+\definecolor{darkred}{rgb}{0.6,0.0,0.0}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+\definecolor{darkyellow}{rgb}{0.6,0.6,0.0}
+\definecolor{turkey}{rgb}{0.0,0.5,0.7}
+\definecolor{redgreen}{rgb}{0.7,0.4,0.0}
+
+
+%\documentclass{standalone}
+%\usepackage{tikz}
+\usepackage{xcolor}
+
+% Define colors for correlation circles
+\definecolor{poscolor}{RGB}{34,139,34}  % Dark green for positive correlations
+\definecolor{negcolor}{RGB}{178,34,34}  % Dark red for negative correlations
+
+\newcommand{\xvar}[1]{\textsc{#1}}
+
+
+%%%>
+\begin{comment}
+:Title: A simple cycle
+:Tags: Foreach;Graphs
+:Author: Jerome Tremblay
+:Slug: cycle
+\end{comment}
+\begin{document}
+
+\begin{minipage}{20.0cm}
+
+\begin{minipage}{9.8cm}
+
+\renewcommand*{\arraystretch}{1.05}
+\begin{tabular}{|l|p{6cm}|c|}
+ \hline
+Class & Description  \\
+ \hline
+ \hline
+\xvar{knewExact} &  $S$ knew/was confident about exact/ precise information  \\
+ \hline
+\xvar{notKnow} & $S$ did not know, not sure/certain, not remember,  approx.~knowledge \\
+ \hline
+\xvar{fussyPerson} & $S$ is anal/predantic/detail oriented \\
+ \hline
+\xvar{easySpeaker} & using $apx$ was easier/faster for $S$ \\
+ \hline
+\xvar{usualApx} & $S$ usually uses $apx$  \\
+ \hline
+\xvar{needed}  & utterance is needed, required, called for, important, necessary, or sufficient \\
+ \hline
+\xvar{realWorld} & real-world consequences of communicated information \\
+ \hline
+\xvar{purpose} & $S$ is purposefully precise/approximate \\
+ \hline
+\xvar{infoNotAvail} & precise information was not available  \\
+ \hline
+\xvar{infoAvail} & precise information was available  \\
+ \hline
+\end{tabular}
+
+\vspace{.2cm}
+
+
+
+\hspace{.8cm}(a) The 10 most frequent motivation classes
+
+
+\end{minipage}
+\begin{minipage}{10.2cm}
+
+\renewcommand*{\arraystretch}{1.45}
+
+{\Large \hspace{-0.1cm }$\Rightarrow$}\hspace{0.5cm }\begin{tabular}{|l|ccc|}
+ \hline
+ & \xvar{likeable} & \xvar{competent}  & \xvar{pedantic}  \\
+ \hline
+\xvar{knewExact} &
+.480 &
+\textcolor{darkgreen}{\textbf{$<$.001}} &
+.028  \\
+\xvar{notKnow} &
+.189 &
+\textcolor{red}{\textbf{$<$.001}} &
+\textcolor{red}{\textbf{$<$.001}}  \\
+\xvar{fussyPerson} &
+.016 &
+.033 &
+\textcolor{darkgreen}{\textbf{$<$.001}}  \\
+\xvar{easySpeaker} &
+.062 &
+\textcolor{red}{\textbf{.003}} &
+.199  \\
+\xvar{usualApx} &
+.933 &
+.129 &
+.106  \\
+\xvar{needed}  &
+.331 &
+\textcolor{darkgreen}{\textbf{.010}} &
+.131  \\
+\xvar{realWorld} &
+.365 &
+.098 &
+.857  \\
+\xvar{purpose} &
+\textcolor{darkgreen}{\textbf{$<$.001}} &
+.034 &
+.252  \\
+\xvar{infoNotAvail} &
+.507 &
+.851 &
+.096  \\
+\xvar{infoAvail} &
+.185 &
+.116 &
+.015  \\
+ \hline
+\end{tabular}
+
+\vspace{.2cm}
+
+\hspace{.85cm}(b) p values for effects of motivation on feature evaluations
+
+
+\end{minipage}
+
+\vspace{.4cm}
+{\Large \hspace{4cm }$\Downarrow$ \hspace{9.6cm }$\Downarrow$}
+\vspace{.4cm}
+
+\begin{minipage}{9.0cm}
+
+\renewcommand*{\arraystretch}{1.05}
+\hspace{.5cm}\begin{tabular}{|c|p{5.5cm}|c|}
+ \hline
+Parameter & Motivation class(es)  \\
+ \hline
+ \hline
+$k_{p}$ & \xvar{knewExact},  \xvar{infoAvail}  \\
+ \hline
+$k_{\neg p}$ & \xvar{notKnow},  \xvar{infoNotAvail}   \\
+ \hline
+$m_{max}$ & \xvar{fussyPerson} \\
+ \hline
+$m_{min}$ & \xvar{easySpeaker},  \xvar{usualApx} \\
+ \hline
+$m_{sit}$ & \xvar{needed},  \xvar{realWorld},  \xvar{purpose} \\
+ \hline
+\end{tabular}
+
+\vspace{.2cm}
+
+
+\hspace{.4cm }(c) Mappings from motivations to model parameters
+
+
+
+\end{minipage}
+\begin{minipage}{11.0cm}
+\begin{minipage}{6.1cm}
+
+\renewcommand*{\arraystretch}{1.4}
+
+{\Large \hspace{-0.1cm }$\Rightarrow$}\hspace{0.7cm }\begin{tabular}{|c|ccc|}
+\hline
+ & $a_{like}$ & $a_{comp}$  & $a_{ped}$ \\
+\hline
+$m_{max}$ &  {\color{black}$0$}  &  {\color{black}$0$} & {\color{darkgreen}$1$} \\
+$m_{sit}$ & {\color{darkgreen}$1$}  & {\color{darkgreen}$1$}& {\color{black}$0$} \\
+$m_{min}$ & {\color{black}$0$}   &   {\color{red}$-1$} &  {\color{black}$0$}\\
+\hline
+\end{tabular}
+
+\vspace{.2cm}
+
+ \hspace{1.3cm}Fitted values for $\phi_M(m,a)$
+
+
+
+
+\end{minipage}
+\begin{minipage}{4.9cm}
+
+\renewcommand*{\arraystretch}{1.86}
+\begin{tabular}{|c|ccc|}
+\hline
+ & $a_{like}$ & $a_{comp}$  & $a_{ped}$ \\
+\hline
+$k_{p}$ &   {\color{black}$0$} &  {\color{darkgreen}$1$} &  {\color{black}$0$}\\
+$k_{\neg p}$ &  {\color{black}$0$}  &  {\color{red}$-1$} & {\color{red}$-1$} \\
+\hline
+\end{tabular}
+
+\vspace{.3cm}
+
+ \hspace{0.2cm}Fitted values for $\phi_K(k,a)$
+
+
+\end{minipage}
+
+\vspace{.4cm}
+
+\hspace{3.1cm}(d) Resulting trivalent functions
+
+\end{minipage}
+
+
+
+
+
+
+
+
+
+\end{minipage}
+\end{document}
