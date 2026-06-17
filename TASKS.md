@@ -1,5 +1,14 @@
 # TASKS.md — Claude Code Task List
 
+> **✅ COMPLETE — historical task list.** Tasks 0–2 below are all done and their
+> deliverables are present (`sem/impact_derivation.py`, `sem/fit.py`,
+> `sem/comparison.py`, plus the `scripts/` runners). The current suite has
+> **41 tests passing** — the "19"/"32 existing tests" guards below are stale.
+> The project shipped **CS1-only**; the RSA and norm-violation baselines and the
+> programmatic Bayesian-network figure referenced in `PLAN.md` were descoped.
+> Retained for historical context; slated for the deferred repo cleanup gated
+> on manuscript finalization.
+
 This file contains concrete, ordered tasks for Claude Code to execute on the
 `sem-pragmatics` project. Work through tasks sequentially. Run the test suite
 after every task that modifies Python files.

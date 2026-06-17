@@ -73,9 +73,10 @@ on their linguistic choices and the situational context, by reasoning about the
 speaker's knowledge states and communicative motivations. We situate SEM within
 the broader tradition of probabilistic pragmatics, showing how it extends the
 inferential chain of the Rational Speech Act framework to social evaluation as
-an explicit target of inference. We test the model's predictions using data from
-two experiments on numerical (im)precision and demonstrate its application to
-pragmatic norm violations. Our findings contribute to existing research in
+an explicit target of inference. We test the model's predictions against data
+from a matched-guise experiment on numerical (im)precision, evaluating both its
+qualitative and quantitative fit to human social judgments. Our findings
+contribute to existing research in
 sociolinguistics and formal pragmatics, providing a principled probabilistic
 framework for understanding how linguistic choices convey social meaning through
 pragmatic inference.
@@ -88,8 +89,10 @@ evaluation, probabilistic pragmatics, Rational Speech Act, numerical precision
 \section{Introduction}
 % -----------------------------------------------------------------------------
 
-The study of pragmatic inference---how listeners derive meaning beyond the
-literal words---began with H.~P.~Grice's influential work on implicature
+\subsection{From Gricean Maxims to Probabilistic Pragmatics}
+
+The study of pragmatic inference, how listeners derive meaning beyond the
+literal words, began with H.~P.~Grice's influential work on implicature
 \citep{grice}. Grice proposed that conversation follows a \emph{Cooperative
 Principle} along with maxims that speakers typically adhere to for effective
 communication. When a speaker seemingly violates a maxim, the listener assumes
@@ -104,14 +107,36 @@ reasoning, shaped by expectations of cooperation and relevance.
 
 Gricean pragmatics initially focused on cooperative reasoning, but later
 developments began to view implicature as indicative of the speaker's epistemic
-state---what the speaker knows, believes, or is committed to. \citet{sauerland2004}
-and \citet{Spector2007} differentiated between strong and weak scalar
-implicatures, demonstrating that the listener's inference hinges on whether the
-speaker knows a stronger alternative to be false or simply does not know it to
-be true. This represented a shift from truth-conditional to epistemic
-interpretations of pragmatic reasoning. Experimental and formal studies, such as
-those by \citet{ChemlaSingh2014a}, supported the notion that many implicatures
-rely on evaluating the speaker's knowledge state. Probabilistic and Bayesian
+state: what the speaker knows, believes, or is committed to. A central insight of
+this tradition is that deriving a strong (``not all'') inference from a weaker
+form requires more than the assumption of cooperativity; it requires an
+additional \emph{competence assumption}, namely that the speaker is informed
+about whether the stronger alternative holds \citep{sauerland2004,schulzvanrooij2006,geurts2010}.
+Without this assumption, an underinformative utterance licenses only a weak
+\emph{ignorance} inference (the speaker does not know that the stronger
+alternative holds); with it, the listener can strengthen this to the conclusion
+that the speaker knows it to be false. This move from primary to secondary
+implicature, the \emph{epistemic step} \citep{sauerland2004,BrehenyKatsosWilliams2006},
+makes explicit that pragmatic enrichment is driven by the listener's model of the
+speaker's knowledge, not by the utterance alone. The scalar case is the classic
+illustration \citep{Spector2007,ChemlaSingh2014a}: whether ``some'' implies ``not
+all'' depends on whether the speaker is taken to know the stronger alternative to
+be false or merely fails to affirm it. More broadly, this represented a shift from
+truth-conditional to epistemic interpretations of pragmatic reasoning, in which
+the listener's inference is fundamentally an inference about the speaker's mind.
+
+%Gricean pragmatics initially focused on cooperative reasoning, but later
+%developments began to view implicature as indicative of the speaker's epistemic
+%state: what the speaker knows, believes, or is committed to. \citet{sauerland2004}
+%and \citet{Spector2007} differentiated between strong and weak scalar
+%implicatures, demonstrating that the listener's inference hinges on whether the
+%speaker knows a stronger alternative to be false or simply does not know it to
+%be true. This represented a shift from truth-conditional to epistemic
+%interpretations of pragmatic reasoning. Experimental and formal studies, such as
+%those by \citet{ChemlaSingh2014a}, supported the notion that many implicatures
+%rely on evaluating the speaker's knowledge state. 
+
+Probabilistic and Bayesian
 models, including the Rational Speech Act (RSA) framework
 \citep{frank2012,GoodmanStuhlmuller2013,PottsLassiterLevyFrank2016}, advanced
 this perspective by conceptualizing pragmatic inference as Bayesian reasoning
@@ -119,78 +144,176 @@ over the speaker's epistemic beliefs and communicative goals. From this
 viewpoint, pragmatic inference is nuanced and probabilistic, reflecting
 uncertainty about the speaker's knowledge and intentions.
 
-Beyond epistemic reasoning, a significant area of research highlights that
-pragmatic inference involves uncovering speaker intentions and motives---the
-\emph{why} behind an utterance. \citet{Grice1957} defined meaning through
-intention recognition. \citeauthor{SperberWilson1995}'s
-(\citeyear{SperberWilson1995}) Relevance Theory portrays communication as the
-process of inferring a speaker's communicative and informative intentions.
-Sociolinguistic and cognitive perspectives \citep[e.g.,][]{brownlevinson1987,Tomasello2003}
-emphasize the influence of social motives---such as politeness, persuasion, and
-face-saving---on pragmatic inference. Empirical studies on indirect speech acts
-\citep[e.g.,][]{Gibbs1986,LeePinker2010} show that listeners discern not only
-what speakers mean but why they opt for indirect or strategic expressions,
-revealing motives like maintaining deniability or managing social relationships.
+\subsection{Intentions, Motives, and Communicative Goals}
 
-Recent computational and cognitive models unify these concerns, viewing
-pragmatic inference as joint reasoning about epistemic states and communicative
-intentions. The RSA framework \citep{frank2012,goodman2016} explicitly combines
-these dimensions: listeners assess the likelihood of an utterance given the
-speaker's knowledge, goals, and motivations. \citet{bergen2016} conceptualize
-pragmatic understanding as probabilistic reasoning involving both semantic
-alternatives and speaker motives, linking epistemic and intentional inference.
-This convergence illustrates a wider trend in contemporary pragmatics, which
-integrates informational (epistemic) and intentional (motivational) elements of
-meaning as parts of a unified social-cognitive process.
 
-Research increasingly shows that contextual factors---such as prior discourse,
-shared knowledge, expectations, and social settings---significantly influence
-pragmatic inferences. Studies in experimental pragmatics
-\citep[e.g.,][]{BrehenyKatsosWilliams2006,DegenTanenhaus2015} reveal that the
-availability and prominence of alternatives depends heavily on contextual
-relevance and mutual assumptions between speakers. \citet{vanRooij2003} and
-\citet{Clark1996} stress that pragmatic reasoning occurs within common ground
-and joint activity, indicating that the same utterance can lead to different
-inferences depending on the conversational or cultural context. This context
-sensitivity illustrates that pragmatic inference is not a rigid mechanism but a
-flexible reasoning process attuned to social, informational, and situational
-cues.
+Beyond epistemic reasoning, a substantial body of work locates pragmatic
+inference in the recovery of speaker intentions and motives: the \emph{why}
+behind an utterance. The foundations are philosophical. \citet{Grice1957} defined
+speaker meaning itself in terms of intention recognition: a speaker means
+something by an utterance in virtue of intending the hearer to recognize that
+very intention, so that understanding an utterance is, at bottom, an inference
+about the speaker's communicative intentions. \citeauthor{SperberWilson1995}'s
+(\citeyear{SperberWilson1995}) Relevance Theory develops this into a cognitive
+account on which comprehension is the search for an interpretation that the
+speaker could rationally have intended to be optimally relevant, recovering both
+the speaker's informative intention (what they aim to convey) and their
+communicative intention (that they aim to convey it). On these views, inference
+about meaning is inseparable from inference about why the speaker spoke as they
+did.
+
+Crucially, the relevant motives are often \emph{social} rather than purely
+informational. \citeauthor{brownlevinson1987}'s (\citeyear{brownlevinson1987})
+politeness theory casts utterance choice as the management of face, and work in
+developmental and cognitive pragmatics treats communication as fundamentally
+cooperative social action \citep{Tomasello2003,Clark1996}. The clearest
+illustration that speakers choose forms strategically comes from research on
+indirect speech: \citet{LeePinker2010} explain off-record indirectness through a
+``strategic speaker'' who trades efficiency for plausible deniability when
+unsure whether the hearer is cooperative or antagonistic, on the premise that
+communication mixes cooperation with conflict and that language serves both to
+convey information and to negotiate the speaker--hearer relationship. What such
+work establishes, and what matters for the model developed below, is that the
+choice of one form over an available alternative is itself an object of
+inference: listeners routinely ask not only what a speaker meant but why they
+chose to mean it \emph{that way}, and they draw conclusions about the speaker
+accordingly.
+
+Recent computational and cognitive models bring the epistemic and intentional
+strands together, treating pragmatic interpretation as joint Bayesian reasoning
+about what the speaker knows and what they are trying to do. The Rational Speech
+Act framework \citep{frank2012,goodman2016} models the listener as inverting a
+model of a goal-directed speaker, and \citet{bergen2016} show how reasoning over
+semantic alternatives and speaker goals can be combined within a single
+probabilistic system. Extensions to explicitly social goals, such as
+\citeauthor{yoontessleretal2020}'s (\citeyear{yoontessleretal2020}) model of
+polite speech, demonstrate that listeners jointly infer informational and social
+intentions from a single utterance. This convergence reflects a broader trend in
+contemporary pragmatics toward integrating informational (epistemic) and
+intentional (motivational) reasoning within one social-cognitive process,
+precisely the integration the present model builds on.
+
+
+\subsection{The Role of Context}
+
+Both strands of pragmatic reasoning surveyed so far, the epistemic and the
+motivational, operate under the control of context. A large experimental
+literature shows that even the most-studied inferences are not computed
+automatically but depend on the situation: scalar implicatures arise more
+readily when the context makes the stronger alternative relevant, and recede
+when it does not \citep{BrehenyKatsosWilliams2006,DegenTanenhaus2015}. A
+recurring way of articulating this dependence is through the \emph{Question Under
+Discussion}: context fixes which alternatives are live, and hence which
+inferences a listener is licensed to draw \citep{roberts2012}. More generally,
+\citet{vanRooij2003} and \citet{Clark1996} stress that pragmatic reasoning
+unfolds within common ground and joint activity, so that the same utterance can
+support different inferences depending on the conversational situation. Context,
+on this view, is not a backdrop but a determinant of pragmatic meaning: it sets
+the alternatives, the relevant question, and the assumptions against which an
+utterance is interpreted.
+
+This context-sensitivity is not peculiar to epistemic inference. As the next
+subsection develops, the \emph{social} meaning a listener reads off a speaker's
+choice is equally situation-dependent: the same linguistic form can support
+different social interpretations in different contexts, rather than carrying a
+fixed social value \citep{campbellkibler2007}. It is this shared property, that both what a speaker is taken
+to know and how they are socially evaluated depend on the context of utterance,
+that the model developed in this paper builds on, treating social evaluation as a
+context-sensitive inference of the same general kind that governs epistemic
+interpretation.
+
+\subsection{Social Meaning and Pragmatic Reasoning}
 
 Recent research in sociopragmatics explores how pragmatic reasoning interacts
-with \emph{social meaning}---the information language provides about a speaker's
-social identity, affiliations, and personal traits \citep{Eckert2008,Podesva2011,Silverstein2003}. The foundation of social meaning research stems from \citeauthor{Labov1972}'s
-(\citeyear{Labov1972}) demonstration that linguistic variation is systematic and
-socially meaningful, linking language use to social structure and change. Building
-on this, \citeauthor{Eckert2012}'s (\citeyear{Eckert2012}) ``Three Waves''
-framework illustrates the field's evolution from correlating variables with
-demographic categories to understanding stylistic practice, stance, and persona
-as sites where social meaning is constructed.
+with \emph{social meaning}: the information language provides about a speaker's
+social identity, affiliations, and personal traits \citep{Eckert2008,Podesva2011,Silverstein2003}.
+The study of social meaning has its roots in variationist sociolinguistics.
+\citeauthor{Labov1972}'s (\citeyear{Labov1972}) foundational work demonstrated
+that linguistic variation is systematic and socially stratified, linking
+language use to social structure and change. Subsequent research moved beyond
+correlating variants with fixed demographic categories toward understanding how
+speakers actively deploy variation to construct stances, styles, and personas;
+\citeauthor{Eckert2012}'s (\citeyear{Eckert2012}) ``three waves'' synthesis
+characterizes this trajectory, culminating in a view on which social meaning is
+not a static property of a form but is produced in interaction.
 
-This sociolinguistic foundation has recently aligned with pragmatic and semantic
-perspectives. Research on sociophonetic variation \citep{burnett2017,burnett2019,burnett2023,burnett2025},
-the pragmatics of the definite article \citep{Acton2019}, and inferences about
-relevance and informativity \citep{beltramapapafragou2023} demonstrates that
-context, identity, and pragmatic reasoning collaboratively shape meaning.
-Collectively, this research underscores the intricate connection between
-pragmatic inference and social interpretation: listeners consider not only
-\emph{what} speakers mean and \emph{why} they say it, but also \emph{who they
-are} and \emph{how they position themselves} in conversation.
+On this view, a linguistic variant is not tied to a single fixed social value.
+\citet{Eckert2008} and \citet{Silverstein2003} argue that a variant indexes an
+\emph{indexical field}, a constellation of related potential meanings, only some
+of which are activated on any given occasion, depending on the speaker, the
+listener, and the situation. \citet{campbellkibler2007} demonstrates this
+empirically: the English variable (ING) shifts listeners' perceptions of a
+speaker along dimensions such as education, articulateness, and formality, but
+its effect is not constant; the same variant can be heard as, for instance,
+compassionate or condescending depending on the listener's prior orientation to
+the speaker, and its social impact depends on the surrounding linguistic and
+situational context. This is the context-sensitivity anticipated at the end of
+the previous subsection: social meaning, like epistemic meaning, is the product
+of situated interpretation rather than a fixed mapping from form to value.
 
-In summary, the development from Grice to modern computational and
-sociopragmatic approaches reveals a gradual expansion of what pragmatic
-inference involves---from cooperative logic, to reasoning about epistemic states,
-to modeling intentions, motives, and social meanings. Pragmatic understanding is
-a form of social cognition shaped by contextual constraints: listeners must
-reason about what the speaker knows, what they intend to achieve, how their
-utterance affects their social position, and how the surrounding context affects
-these interpretations.
+
+
+A terminological clarification is in order, since ``social meaning'' is used in
+two related senses in the literature this work draws on. The first is the
+\emph{indexical} sense just described: the marking of a speaker's social
+identity, group membership, or persona through conventionalized associations
+between linguistic form and social category.
+A second sense, prominent in recent work in semantics and pragmatics, concerns
+the \emph{attributes} a listener ascribes to a speaker, traits such as
+competence, warmth, or pedantry, but also transient stances and affective
+states, on the basis of a particular linguistic choice
+\citep{beltrama2020,beltramastaumcasasanto2021}. The present work is concerned
+with social meaning in this second, attribute-based sense: SEM models how a
+listener arrives at trait judgments of a speaker from a pragmatic choice, not how
+linguistic forms come to index social categories. The two senses are not
+separate phenomena so much as regions of a continuum: as \citet{Eckert2019}
+argues, social meaning ranges from stable social categories to flexible,
+interaction-based stances, and \citet{beltrama2020} characterizes social meaning
+as a constellation of traits (demographic, personal, and ideological) that
+linguistic forms convey about their users. Attribute-level inferences of the kind
+SEM models are thus plausibly among the ingredients from which richer
+identity-level meanings are built; SEM isolates and formalizes this
+attribute-based step.
+
+The attribute-based sense of social meaning has recently become the focus of a
+growing body of work at the interface of pragmatics and sociolinguistics, which
+shares a common premise: that many social meanings are not read off the form
+directly, as in the indexical case, but are \emph{derived inferentially} from the
+speaker's pragmatic choices \citep{Acton2019,beltrama2020}. On this view, the
+social attributes a listener ascribes to a speaker, such as competence or warmth,
+are the product of reasoning about why the speaker made a particular choice among
+alternatives, in much the same way that epistemic implicatures are. Several
+strands of work develop this idea. \citet{Acton2019} shows that even a function
+word like the definite article carries social meaning through the stance it
+signals toward a referent. Closest to the present study, \citet{beltramaetal2022}
+find that the choice between precise and approximate numerical expressions leads
+listeners to distinct social evaluations, modulated by context, and
+\citet{beltramapapafragou2023} show that a speaker's adherence to or violation of
+the Gricean maxims of Relevance and Informativeness shifts perceptions of their
+warmth and competence. Critically, the latter find that the social effect depends
+on the inferred \emph{reason} for the speaker's behavior, for instance whether an
+uninformative answer is attributed to inability or to unwillingness, demonstrating
+that listeners' social judgments are driven by inferences about the speaker's
+epistemic state and motivation, not by the utterance alone. This is precisely the
+inferential route from pragmatic choice to social evaluation that the present work
+sets out to formalize.
+
+\subsection{The Present Work}
+
+Taken together, these developments reveal that pragmatic understanding is a form
+of social cognition: to interpret an utterance, a listener reasons jointly about
+what the speaker knows, why they chose to speak as they did, and what this
+implies about them as a social agent, all under the control of context. What has
+so far been established largely through separate experimental and theoretical
+strands, however, has not been brought together in a single explicit model of how
+these inferences combine to yield a social evaluation.
 
 Building on these insights, we introduce the Social Evaluation Model (SEM), a
 probabilistic framework that formalizes how linguistic choices, situational
 context, and pragmatic reasoning work together to shape listeners' social
 judgments. SEM shows how listeners infer a speaker's knowledge state and
 communicative motivation from their language use, and how these inferences give
-rise to evaluations of social attributes such as competence, reliability, and
+rise to evaluations of social attributes such as competence, helpfulness, and
 likability. The framework expands the inferential chain of probabilistic
 pragmatics to include evaluative meaning, where small differences in language
 use can lead to subtle, context-dependent changes in social interpretation
@@ -211,6 +334,8 @@ the model's contributions and directions for future work.
 \label{sec:sem}
 % -----------------------------------------------------------------------------
 
+\subsection{From Meaning Recovery to Social Evaluation}
+
 The Social Evaluation Model (SEM) is a probabilistic framework for predicting
 how listeners form social judgments about speakers based on their linguistic
 choices. It builds on the core architecture of probabilistic pragmatics, in
@@ -221,10 +346,10 @@ inference that has not previously been formalized within it: the social
 evaluation of the speaker as a communicative agent.
 
 Like RSA and related models, SEM treats pragmatic interpretation as Bayesian
-inference. A listener who hears utterance $v$ in context $c$ does not simply
+inference. A listener who hears utterance $u$ in context $c$ does not simply
 decode its semantic content; they reason probabilistically about what mental
 states could have produced that utterance. Central to this reasoning is a set of
-utterance alternatives $V$---the other things the speaker could have said---and
+utterance alternatives $U$, the other things the speaker could have said, and
 a commitment to the truthfulness constraint, which limits the knowledge states a
 speaker could plausibly be in given what they actually said. These features are
 not incidental borrowings from RSA; they are load-bearing components of SEM, and
@@ -235,15 +360,17 @@ Where SEM departs from existing probabilistic pragmatic models is in what the
 listener is ultimately trying to infer. In RSA, inference terminates at meaning:
 the listener recovers the speaker's intended message. In SEM, meaning recovery is
 not the endpoint but an intermediate step. The listener uses their inferences
-about the speaker's epistemic state---what the speaker knew, and what they could
-therefore truthfully have said---to make a further inference about the speaker's
+about the speaker's epistemic state, what the speaker knew and what they could
+therefore truthfully have said, to make a further inference about the speaker's
 communicative motivation: why did they choose this utterance over its
-alternatives? And from that motivational inference, the listener arrives at a
-social evaluation: what does this choice reveal about the speaker's competence,
-reliability, or warmth?
+alternatives? And from that motivational inference, together with the inferred epistemic
+state itself, the listener arrives at a social evaluation: what does this choice
+reveal about the speaker's competence, helpfulness, or friendliness?
 
-This staged reasoning---from utterance to knowledge state, from knowledge state
-to motivation, from motivation to social attribute---is what SEM formalizes. The
+This reasoning, inferring the knowledge state from the utterance, then the
+motivation from the knowledge state and context, is what SEM formalizes; the
+social attribute is then evaluated from both the inferred knowledge state and the
+inferred motivation jointly. The
 key novel components, relative to RSA, are: (i)~social attributes as an explicit
 target of inference; (ii)~discrete motivation-based strategies, each defined as a
 function from context and knowledge state to utterance, which are more enumerable
@@ -261,13 +388,13 @@ as a Bayesian network.
   \includegraphics[scale=0.8]{figures/semRSArelationship.pdf}
   \caption{The relationship between Probabilistic Pragmatics / RSA and the
            Social Evaluation Model (SEM). SEM extends the core components of
-           RSA---Bayesian listener inference, utterance alternatives,
+           RSA (Bayesian listener inference, utterance alternatives,
            truthfulness constraint, prior probabilities, and context
-           sensitivity---with novel components: social attributes as the
+           sensitivity), with novel components: social attributes as the
            target of inference, discrete motivation strategies, an impact
            function~$I(a \mid k, m;\omega)$ linking epistemic to social
            dimensions, empirically fitted trivalent functions~$\phi$, and
-           staged inference ($v,c \to K \to M \to a$).}
+           staged inference ($u,c \to K \to M \to a$).}
   \label{fig:sem_rsa}
 \end{figure}
 
@@ -275,15 +402,15 @@ as a Bayesian network.
   \centering
   \includegraphics[scale=0.9]{figures/semNet.pdf}
   \caption{Bayesian network representation of the Social Evaluation Model.
-           Dashed circles denote observed variables (utterance $v$, context $c$)
+           Dashed circles denote observed variables (utterance $u$, context $c$)
            available to the listener. Solid circles denote latent variables
            inferred by the listener: knowledge state $k$, motivation-based
            strategy $m$, and social attribute evaluation $a$. Rectangles denote
            fixed parameters: prior probabilities $P(k)$ and $P(m)$, and the
            weight parameter $\omega$. Inference proceeds in three stages:
-           $v$ and $P(k)$ jointly determine the posterior over knowledge states
-           $P(k|v)$; $k$, $v$, $c$, and $P(m)$ determine the posterior over
-           strategies $P(m|k,v,c)$; and $k$ and $m$ feed into the impact
+           $u$ and $P(k)$ jointly determine the posterior over knowledge states
+           $P(k|u)$; $k$, $u$, $c$, and $P(m)$ determine the posterior over
+           strategies $P(m|k,u,c)$; and $k$ and $m$ feed into the impact
            function, weighted by $\omega$, to yield the social evaluation $a$.
            The dashed arrow from $k$ to $a$ reflects the direct contribution of
            epistemic inference alongside the motivational pathway via $m$.}
@@ -293,19 +420,21 @@ as a Bayesian network.
 
 \subsection{The Model Architecture}
 
-The social evaluation model\footnote{A Python implementation of SEM and its
-applications to the case studies can be found here: \texttt{[LINK TO ADD]}.}
+The social evaluation model\footnote{A Python implementation of SEM, including a 
+reviewer-facing Jupyter
+notebook that reproduces the computations and figures in this paper, is available
+at \url{[ANONYMIZED GITHUB REPO LINK]}.}
 (SEM) predicts the listener's social assessment of the speaker based on using
-utterance $v$ from a set of alternatives $V$, given a situational context
+utterance $u$ from a set of alternatives $U$, given a situational context
 $c \in C$. Formally, the listener's evaluation function
-$E_L(a|v,c)$,\footnote{The function is defined as $E_L: A \times V \times C
+$E_L(a|u,c)$,\footnote{The function is defined as $E_L: A \times U \times C
 \rightarrow \mathbb{R}$; it returns a numerical score representing the
 listener's evaluation of the speaker on attribute $a$.} which specifies how
 the listener evaluates a speaker concerning social attribute $a$, is defined as:
 
 \begin{equation}
-E_{L}(a|v,c) = \sum_{k \in K} \sum_{m \in M}
-  P(k|v) \cdot P(m|k,v,c) \cdot I(a|k,m;\omega)
+E_{L}(a|u,c) = \sum_{k \in K} \sum_{m \in M}
+  P(k|u) \cdot P(m|k,u,c) \cdot I(a|k,m;\omega)
 \label{eq1}
 \end{equation}
 
@@ -314,15 +443,15 @@ motivation-based strategies,\footnote{A motivation-based strategy is a function
 that specifies what utterance a speaker would produce across different contexts
 and knowledge states when driven by a particular motivation. The same behavioral
 strategy can in principle arise from different underlying motivations; the case
-study in Section~\ref{sec:imprecision} provides detailed examples.} $P(k|v)$
-and $P(m|k,v,c)$ are conditional probabilities, and $I(a|k,m;\omega)$ is an
+study in Section~\ref{sec:imprecision} provides detailed examples.} $P(k|u)$
+and $P(m|k,u,c)$ are conditional probabilities, and $I(a|k,m;\omega)$ is an
 impact function that determines how inferences about knowledge state and
 motivation jointly affect the listener's evaluation of social attribute $a$.
 The weight factor $\omega$ adjusts the relative contribution of epistemic versus
 motivational inference to the evaluation.
 
 This equation can be understood as formalizing two intuitive notions: (i)~when
-a listener hears utterance $v$ in context $c$, they infer the probability of
+a listener hears utterance $u$ in context $c$, they infer the probability of
 the speaker being in knowledge state $k$ and the probability of the speaker
 acting according to motivation strategy $m$; and (ii)~the listener holds an
 internal mapping from knowledge states and motivations to social attributes,
@@ -335,7 +464,7 @@ the sigmoid: $x_{prob} = (1 + e^{-\kappa x})^{-1}$, where $\kappa > 0$ controls
 the steepness.}
 
 \paragraph{Knowledge states and the truthfulness constraint.}
-A central aspect of SEM is the set $V$, which contains the utterances a speaker
+A central aspect of SEM is the set $U$, which contains the utterances a speaker
 considers as alternatives in a given situation. SEM focuses specifically on
 \emph{non-equivalent} alternatives, i.e., forms that differ in their
 core-semantic meaning. This is important because semantic differences between
@@ -347,43 +476,43 @@ students passed'') is committed to knowing it.
 
 These different epistemic possibilities are represented by the set of knowledge
 states $K$. Inferences about knowledge states are formalized by the conditional
-probability $P(k|v)$, derived from the assumption that the speaker adheres to
+probability $P(k|u)$, derived from the assumption that the speaker adheres to
 the maxim of truthfulness: they only assert what they know to be true. This
-assumption is implemented via a truthfulness function $t: K \rightarrow \mathcal{P}(V)$,
+assumption is implemented via a truthfulness function $t: K \rightarrow \mathcal{P}(U)$,
 which maps each knowledge state $k$ to the set of utterances the speaker could
 truthfully produce in that state. The posterior probability of knowledge state
-$k$ given utterance $v$ is then:
+$k$ given utterance $u$ is then:
 
 \begin{equation}
-P(k|v) = \frac{P(k) \cdot \chi_t(k,v)}
-               {\sum_{k' \in K} P(k') \cdot \chi_t(k',v)}
+P(k|u) = \frac{P(k) \cdot \chi_t(k,u)}
+               {\sum_{k' \in K} P(k') \cdot \chi_t(k',u)}
 \label{eq2}
 \end{equation}
 
 \noindent where $P(k)$ is the prior probability of knowledge state $k$, and
-$\chi_t(k,v) = 1$ if $v \in t(k)$ and $0$ otherwise.
+$\chi_t(k,u) = 1$ if $u \in t(k)$ and $0$ otherwise.
 
 \paragraph{Motivation-based strategies.}
 The set $M$ represents the motivation-based strategies a speaker might follow.
-Each strategy $m \in M$ is a function $m: C \times K \rightarrow V$ that
+Each strategy $m \in M$ is a function $m: C \times K \rightarrow U$ that
 specifies the utterance a speaker would choose in context $c$ with knowledge
 state $k$ when driven by a particular motivation. For example, a maximally
 informative strategy always selects the most precise available utterance given
 the current knowledge state, while a speaker-convenience strategy always selects
 the least effortful form regardless of context.
 
-Given a set of strategies, the listener can calculate $P(m|k,c,v)$, the
+Given a set of strategies, the listener can calculate $P(m|k,c,u)$, the
 conditional probability that the speaker follows strategy $m$ given knowledge
-state $k$, context $c$, and observed utterance $v$:
+state $k$, context $c$, and observed utterance $u$:
 
 \begin{equation}
-P(m|k,c,v) = \frac{P(m) \cdot \chi_m(c,k,v)}
-                  {\sum_{m' \in M} P(m') \cdot \chi_m(c,k,v)}
+P(m|k,c,u) = \frac{P(m) \cdot \chi_m(c,k,u)}
+                  {\sum_{m' \in M} P(m') \cdot \chi_m(c,k,u)}
 \label{eq3}
 \end{equation}
 
 \noindent where $P(m)$ is the prior probability of strategy $m$, and
-$\chi_m(c,k,v) = 1$ if $m(c,k) = v$ and $0$ otherwise.
+$\chi_m(c,k,u) = 1$ if $m(c,k) = u$ and $0$ otherwise.
 
 \paragraph{The impact function.}
 The impact function $I(a|k,m;\omega)$ defines how inferences about knowledge
@@ -412,28 +541,32 @@ detailed in Section~\ref{sec:imprecision}.} The weight parameter $\omega \in
 inference: high $\omega$ places more weight on what the speaker knew; low
 $\omega$ places more weight on their inferred motivation.
 
+A note on whose reasoning these parameters encode. The free parameters of
+SEM, the priors $P(k)$ and $P(m)$ and the weight $\omega$, are properties of
+the \emph{listener}, not the speaker: they specify how a particular listener
+distributes prior expectation over knowledge states and motivations, and how
+heavily they weigh epistemic against motivational inference in arriving at a
+social judgment. Different listeners may bring different priors and weightings
+to the same utterance, and SEM represents this variation directly through these
+parameters. The model as stated thus describes the inferential process of a
+single, parameterized listener; a population of listeners corresponds to a
+distribution over parameter settings. We exploit exactly this interpretation in
+Section~\ref{sec:variants}, where sampling over the parameter space functions as
+a virtual experiment across a range of listeners.
+
+
 \paragraph{Relation to RSA.}
-It is worth making explicit why SEM is presented as a distinct model rather than
-a direct extension of RSA, as \citeauthor{frank2012}'s (\citeyear{frank2012})
-framework could in principle be extended to include social attributes as
-additional latent variables. There are two reasons for maintaining a distinct
-formulation. First, RSA's standard speaker model is utility-based: the speaker
-is assumed to maximize expected utility, typically a function of informativeness
-and utterance cost. SEM replaces this with a discrete set of behavioral
-strategies, each representing a recognizable communicative motivation (being
-maximally precise, adapting to context, following the path of least effort,
-etc.). This makes the strategies enumerable, interpretable, and directly
-groundable in empirical data on attributed motivations---a methodological
-advantage that is not easily achieved within the utility-based RSA architecture.
-Second, the impact function $I$ and the trivalent mappings $\phi_K$, $\phi_M$
-have no counterpart in RSA: they constitute the formal machinery for linking
-epistemic and motivational inference to social evaluation, which is the
-substantive novel contribution of SEM. That said, SEM is compatible with RSA and
-could be integrated into it as a downstream module: the social evaluations
-produced by SEM could serve as inputs to a speaker model in RSA, allowing
-speakers to strategically shape the evaluative inferences their utterances
-elicit. We return to this integration possibility in
-Section~\ref{sec:conclusion}.
+SEM is best understood as a distinct model that \emph{extends} the RSA
+inferential chain rather than as a competitor to it. \citeauthor{frank2012}'s
+(\citeyear{frank2012}) framework could in principle be extended to include social
+attributes as additional latent variables, but doing so would still require the
+two components that constitute SEM's substantive contribution: a set of discrete,
+empirically groundable motivation strategies in place of RSA's utility-based
+speaker model, and the impact function $I$ with its trivalent mappings $\phi_K$,
+$\phi_M$, which have no counterpart in standard RSA. We defer a fuller comparison
+of the two architectures to Section~\ref{sec:conclusion}, where we also discuss
+how SEM and RSA can be integrated, with SEM's social evaluations serving as
+inputs to a downstream speaker model.
 
 
 % -----------------------------------------------------------------------------
@@ -457,11 +590,18 @@ precisely or approximately, making this a situation of speaker choice.
 
 Numerical (im)precision serves as an ideal testing ground for SEM, highlighting
 how linguistic choices reflect both contextual adaptation and social
-interpretation. Previous research has shown that speakers' preferred degree of
-precision varies based on contextual demands and communicative relevance
-\citep{vanderhenst2002,muehlenberndsolt2022}. Furthermore, different levels of
-(im)precision convey distinct social meanings \citep{beltrama2018,beltramaetal2022},
-and listeners' social evaluations are linked to their inferences about a
+interpretation. It is also a domain where probabilistic pragmatics has already
+proven productive: \citet{kao2014} model the nonliteral interpretation of number
+words, including the ``pragmatic halo'' by which round numbers are understood
+imprecisely, as Bayesian social inference about the speaker's communicative
+goals, within the RSA framework. Their model targets what an imprecise number is
+taken to \emph{mean}; SEM addresses the complementary question of what the choice
+of an (im)precise form reveals about the \emph{speaker}. Beyond interpretation,
+previous research has shown that speakers' preferred degree of precision varies
+with contextual demands and communicative relevance
+\citep{vanderhenst2002,muehlenberndsolt2022}, and that different levels of
+(im)precision convey distinct social meanings \citep{beltrama2018,beltramaetal2022};
+listeners' social evaluations are in turn linked to their inferences about a
 speaker's knowledge state and communicative motivations \citep{soltEtAl2025}.
 These findings suggest that (im)precision offers a rich domain for exploring how
 epistemic and contextual factors jointly shape pragmatic and social inference.
@@ -472,7 +612,7 @@ precision to match what is communicatively relevant: round numbers were preferre
 when exact values were pragmatically unimportant, while precise numbers were used
 when accuracy mattered. \citet{muehlenberndsolt2022} extended this in a
 production study where participants systematically adapted their expressions to
-context---more exact expressions when accuracy was pragmatically important, and
+context: more exact expressions when accuracy was pragmatically important, and
 more approximate ones when fine detail was unnecessary.
 
 Another line of research reveals that numerical (im)precision conveys social
@@ -487,9 +627,10 @@ stronger in formal ``for-the-record'' contexts than in casual ``bonding'' contex
 These findings highlight exactly the kind of interplay between pragmatic
 expectations, social goals, and contextual norms that SEM aims to capture.
 
-We will use SEM to predict the empirical results of two experiments we conducted,
-reported in full in \citet{soltEtAl2025}. These experiments investigated how
-situational context and speaker knowledge state influence the social meaning of
+We will use SEM to predict the empirical results of an experiment we conducted,
+reported in full and preregistered in \citet{soltEtAl2025} (preregistration:
+\url{[ANONYMIZED OSF PREREG LINK]}). This experiment investigated how
+situational context influences the social meaning of
 precise and imprecise numerical forms. We employed the matched guise methodology
 \citep{campbellkibler2007}, where participants evaluate speakers in different
 versions or `guises' of the same scenario. In what follows, we summarize the
@@ -499,7 +640,6 @@ the model predictions.
 
 \subsection{Participants, Design, and Methods}
 
-\paragraph{Experiment 1.}
 A total of 371 native English speakers, aged 18--64, with U.S.~IP addresses took
 part via Prolific (payment: \textsterling 1.20). The experiment used six brief,
 pre-tested scenarios in which one speaker asks a question and another responds
@@ -521,20 +661,14 @@ using a precise [imprecise] expression rather than a more approximate [more
 precise] alternative, via a free-text fill-in-the-blank format.
 \end{itemize}
 
-\paragraph{Experiment 2.}
-A total of 391 native English speakers (same recruitment criteria) participated.
-The materials were modified versions of the same six scenarios, in which it was
-established that the speaker had access to a source of precise information and
-had consulted it before answering. The same $2 \times 2$ design and task
-structure were used. Data from both experiments were combined to yield eight
-conditions ($2~\text{forms} \times 2~\text{contexts} \times 2~\text{knowledge
-states}$). The full experimental details and statistical results are reported in
-\citet{soltEtAl2025}; here we focus on the findings relevant to fitting and
-evaluating SEM.
+\citet{soltEtAl2025} additionally report a second experiment that manipulates
+established speaker knowledge state; since the present model evaluation draws on
+the context/form data above, we do not make further use of it here and refer the
+reader to that paper for details.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[scale=1.1]{figures/experDesign.pdf}
+  \includegraphics[scale=1.05]{figures/experDesign.pdf}
   \caption{Example scenario (\xvar{lpr}: low precision context; \xvar{hpr}:
            high precision context) with the numerical forms \xvar{precise} and
            \xvar{approx}. This `stolen bike' scenario is one of six pre-tested
@@ -593,8 +727,8 @@ Figure~\ref{figTask2}(a).
   \label{figFreqT2}
 \end{figure}
 
-To explore whether inferred speaker motivations influence social meaning---a
-core assumption of SEM---we compared, for each Task~2 motivation class, the
+To explore whether inferred speaker motivations influence social meaning, a
+core assumption of SEM, we compared, for each Task~2 motivation class, the
 Task~1 ratings of participants who did versus did not mention that class, using
 independent-samples $t$-tests (Experiment~1). Figure~\ref{figTask2}(b) displays
 the $p$-values for all combinations (3 social attributes $\times$ 10 motivation
@@ -606,8 +740,8 @@ that social meaning is influenced by assumed speaker motivations.
 \subsection{Fitting the Model}
 To fit SEM to this case study, we construct a scenario model that matches the
 experimental design. We define two situational contexts: $c_{LP}$ (low-precision
-needs) and $c_{HP}$ (high-precision needs), and two utterance types: $v_{prc}$
-(precise) and $v_{apx}$ (explicitly approximate). Figure~\ref{figSketch}
+needs) and $c_{HP}$ (high-precision needs), and two utterance types: $u_{prc}$
+(precise) and $u_{apx}$ (explicitly approximate). Figure~\ref{figSketch}
 illustrates the model using an analogous scenario in which a speaker reports the
 time of an event either precisely (``at 8:32'') or approximately (``around
 8:30''), to either a friend at a dinner party or a police officer.
@@ -615,8 +749,8 @@ time of an event either precisely (``at 8:32'') or approximately (``around
 We consider two relevant knowledge states: $k_p$, the speaker has precise
 knowledge (e.g., knows the event happened at 8:32), and $k_{\neg p}$, the
 speaker has only approximate knowledge (e.g., knows it happened around 8:30
-$\pm$ 5 min). The truthfulness function $t$ is defined as $t(k_p) = \{v_{apx},
-v_{prc}\}$ and $t(k_{\neg p}) = \{v_{apx}\}$: a speaker with only approximate
+$\pm$ 5 min). The truthfulness function $t$ is defined as $t(k_p) = \{u_{apx},
+u_{prc}\}$ and $t(k_{\neg p}) = \{u_{apx}\}$: a speaker with only approximate
 knowledge cannot truthfully use a precise utterance. This is shown in
 Figure~\ref{figSketch}(a).
 
@@ -641,7 +775,7 @@ speaker follows only $m_{max}$.
 
 \begin{figure}[t!]
   \centering
-  \includegraphics[scale=1.15]{figures/sketchLX.pdf}
+  \includegraphics[scale=1.05]{figures/sketchLX.pdf}
   \caption{Exemplary scenario: a speaker reports the time of an event (8:32)
            to a friend at a dinner party (low-precision context) or a police
            officer (high-precision context). (a)~Speaker knowledge states and
@@ -670,15 +804,15 @@ negative difference, and $0$ otherwise (threshold $p < .01$), and replace
 motivation class labels with the corresponding model parameters per the mappings
 in Figure~\ref{figTask2}(c). Where several motivation classes map to the same
 parameter, the cell is set by majority vote. The resulting values are shown in
-Figure~\ref{figTask2}(d).\footnote{One cell---$\phi_M(m_{sit})$ on
-\xvar{competent}---lies at the significance boundary: the underlying
+Figure~\ref{figTask2}(d).\footnote{one cell, $\phi_M(m_{sit})$ on
+\xvar{competent}, lies at the significance boundary: the underlying
 \xvar{needed}--\xvar{competent} difference is significant under a two-sample
 $t$-test ($p = .010$) but falls just short under a mixed-effects model with
 random intercepts for scenario ($p = .012$). We retain the $t$-test value; the
 model's four qualitative predictions hold under either choice.}
 
 \begin{figure}[t]
-  \includegraphics[scale=0.88]{figures/overviewTask2.pdf}
+  \includegraphics[scale=0.78]{figures/overviewTask2.pdf}
   \caption{(a)~The 10 most frequent motivation classes with descriptions.
            (b)~$p$-values for associations between motivation classes and
            attribute ratings (\xvar{competent}, \xvar{likeable},
@@ -719,23 +853,39 @@ across all contexts.
 \xvar{likeable} is greater in \xvar{lpr} than in \xvar{hpr}.
 \end{enumerate}
 
-SEM is considered qualitatively correct if it reproduces the direction of these
-effects:
-
-\begin{enumerate}
-\item $E_L(a_{comp}|v_{prc}, c_{HP}) + E_L(a_{comp}|v_{prc}, c_{LP}) >
-       E_L(a_{comp}|v_{apx}, c_{HP}) + E_L(a_{comp}|v_{apx}, c_{LP})$
-
-\item $E_L(a_{ped}|v_{prc}, c_{HP}) + E_L(a_{ped}|v_{prc}, c_{LP}) >
-       E_L(a_{ped}|v_{apx}, c_{HP}) + E_L(a_{ped}|v_{apx}, c_{LP})$
-
-\item $E_L(a_{comp}|v_{prc}, c_{HP}) - E_L(a_{comp}|v_{apx}, c_{HP}) >
-       E_L(a_{comp}|v_{prc}, c_{LP}) - E_L(a_{comp}|v_{apx}, c_{LP})$
-
-\item $E_L(a_{like}|v_{prc}, c_{HP}) - E_L(a_{like}|v_{apx}, c_{HP}) >
-       E_L(a_{like}|v_{prc}, c_{LP}) - E_L(a_{like}|v_{apx}, c_{LP})$
-\end{enumerate}
-
+SEM is considered qualitatively correct if it reproduces the \emph{direction} of
+these effects. To state this precisely, and to introduce two measures we reuse
+for the quantitative evaluation in Section~\ref{sec:evaluation}, we summarize
+each effect by a signed contrast on the model's evaluation scores. For the two
+main effects (1--2) we define, for an attribute $a$, the across-context form
+contrast
+\[
+  \Delta^{\text{main}}_a \;=\; \big[E_L(a|u_{prc}, c_{HP}) + E_L(a|u_{prc}, c_{LP})\big]
+  \;-\; \big[E_L(a|u_{apx}, c_{HP}) + E_L(a|u_{apx}, c_{LP})\big],
+\]
+and for the two interactions (3--4) the context-modulation contrast
+\[
+  \Delta^{\text{int}}_a \;=\; \big[E_L(a|u_{prc}, c_{HP}) - E_L(a|u_{apx}, c_{HP})\big]
+  \;-\; \big[E_L(a|u_{prc}, c_{LP}) - E_L(a|u_{apx}, c_{LP})\big].
+\]
+Each effect specifies a predicted sign for its contrast: positive for
+$\Delta^{\text{main}}_{comp}$ (Effect~1), $\Delta^{\text{main}}_{ped}$
+(Effect~2), and $\Delta^{\text{int}}_{comp}$ (Effect~3), and negative for
+$\Delta^{\text{int}}_{like}$ (Effect~4).\footnote{Effect~4 is stated as the
+\xvar{approx}-over-\xvar{precise} advantage on \xvar{likeable} being greater in
+\xvar{lpr} than \xvar{hpr}; written as $\Delta^{\text{int}}_{like}$ above, this
+is a negative contrast.} We capture directional agreement with two scores,
+following \citet{muehlenbernd2026}:
+\[
+  \mathrm{DAS} = \frac{\#\{\text{significant main effects with correctly signed } \Delta^{\text{main}}\}}{\#\{\text{significant main effects}\}},
+\]
+\[
+  \mathrm{ISS} = \frac{\#\{\text{significant interactions with correctly signed } \Delta^{\text{int}}\}}{\#\{\text{significant interactions}\}}.
+\]
+The Directional Agreement Score (DAS) and Interaction Sensitivity Score (ISS)
+each range over $[0,1]$, with $1$ indicating that the model reproduces the sign
+of every significant effect of the relevant type. SEM is qualitatively correct on
+this case study exactly when $\mathrm{DAS} = \mathrm{ISS} = 1$.
 \begin{figure}[t!]
   \centering
   \includegraphics[width=\linewidth]{fig8_cs1_model_vs_empirical}
@@ -744,25 +894,25 @@ effects:
            $E_L \in [-1, 1]$), shown alongside the empirical results of
            Experiment~1 (bottom row, mean ratings linearly rescaled to $[-1, 1]$
            via $(x-4)/3$). Bars rise from the scale floor ($-1$, the lowest
-           evaluation); $0$ denotes a median---not neutral---evaluation.}
+           evaluation); $0$ denotes a median, not neutral, evaluation.}
   \label{ficPred}
 \end{figure}
-
 Figure~\ref{ficPred} presents the balanced model's predictions for $a_{comp}$,
-$a_{like}$, and $a_{ped}$ across utterances and contexts. The balanced model
-correctly predicted all four effects. The qualitative alignment between model
-predictions and empirical results is visible in Figure~\ref{ficPred}; the
-attribute-internal patterns are effectively reproduced.
+$a_{like}$, and $a_{ped}$ across utterances and contexts, alongside the empirical
+results. The balanced model achieves $\mathrm{DAS} = \mathrm{ISS} = 1$,
+reproducing the sign of all four significant effects, and the attribute-internal
+patterns are visibly aligned with the empirical data.
 
 To assess robustness, we tested the balanced model against an exhaustive grid of
 free parameter combinations: every combination of $\omega$ (from 0.05 to 0.95)
 and the prior probabilities $P(k_p)$, $P(k_{\neg p})$, $P(m_{max})$,
 $P(m_{sit})$, and $P(m_{min})$ (from 0 to 1), each in increments of 0.02,
-yielding 2,593,080 valid combinations. SEM correctly predicted all four effects
-for $99.87\%$ of combinations; for the remaining $0.13\%$ it correctly predicted
-three out of four.\footnote{In particular, the model struggled to predict
+yielding 2,593,080 valid combinations. 
+SEM achieves $\mathrm{DAS} = \mathrm{ISS} = 1$ for $99.87\%$ of combinations; for
+the remaining $0.13\%$ one of the four effects flips sign (always within the main
+effects, so $\mathrm{ISS} = 1$ throughout).\footnote{In particular, the model struggled to predict
 Effect~1 correctly when $\omega$ was very low, $P(k_p)$ was very low, and
-$P(m_{sit})$ was high---a combination of parameters that is difficult to
+$P(m_{sit})$ was high, a combination of parameters that is difficult to
 motivate on independent grounds.} This demonstrates the robustness of the
 qualitative predictions across the free parameter space.
 
@@ -774,7 +924,7 @@ inferential components are necessary to reproduce the empirical patterns.
 
 
 % -----------------------------------------------------------------------------
-\section{Quantitative Evaluation}
+\section{Quantitative Evaluation and Model Comparison}
 \label{sec:evaluation}
 % -----------------------------------------------------------------------------
 
@@ -786,8 +936,8 @@ formal inference machinery add explanatory value over simpler alternatives?
 
 We address this with two analyses. First, we evaluate the balanced model's
 quantitative fit against the empirical means using an established metric suite.
-Second, we compare the full model against three nested ablations---each of which
-removes one inferential component---evaluated across a sample of parameter
+Second, we compare the full model against three nested ablations, each of which
+removes one inferential component, evaluated across a sample of parameter
 combinations rather than a single setting, so that differences reflect structural
 properties of the model variants rather than parameter choices.
 
@@ -796,35 +946,30 @@ properties of the model variants rather than parameter choices.
 \label{sec:metrics}
 
 Quantitative model evaluation follows the framework proposed by
-\citet{muehlenbergLLM2026} for assessing probabilistic pragmatic models against
-human data. We compare model scores $E_L(a|v,c) \in [-1,1]$ against empirical
+\citet{muehlenbernd2026} for assessing probabilistic pragmatic models against
+human data. We compare model scores $E_L(a|u,c) \in [-1,1]$ against empirical
 human means, which are linearly rescaled from the 7-point Likert scale to
 $[-1,1]$ via $(x-4)/3$, making model and human values directly comparable.
 
-Six effects are assessed for each of the three SEM-modeled attributes
-($a_{comp}$, $a_{like}$, $a_{ped}$): a main effect of form (aggregated across
-contexts) and a form $\times$ context interaction. Of these six effects, four
-are statistically significant in the human data (both main effects: $a_{comp}$
-and $a_{ped}$; both interactions: $a_{comp}$ and $a_{like}$); two are
-non-significant (main effect of $a_{like}$; interaction of $a_{ped}$).
-
-We report the following metrics:
+We report five metrics. The first two are the directional scores already
+introduced in Section~\ref{sec:imprecision}; the remaining three quantify
+magnitude calibration and overall fit. For an attribute $a$, let $\Delta_{H,a}$
+and $\Delta_{M,a}$ denote the human and model contrast values (the
+$\Delta^{\text{main}}_a$ or $\Delta^{\text{int}}_a$ of
+Section~\ref{sec:imprecision}, as appropriate).
 
 \begin{itemize}
-\item \textbf{DAS} (Directional Agreement Score): proportion of \emph{significant}
-main effects on which model and human agree in sign. Range $[0,1]$; $1$ = perfect
-directional agreement on all significant main effects.
-
-\item \textbf{ISS} (Interaction Sensitivity Score): same calculation applied to
-significant form $\times$ context interactions. Range $[0,1]$.
+\item \textbf{DAS} (Directional Agreement Score) and \textbf{ISS} (Interaction
+Sensitivity Score): as defined in Section~\ref{sec:imprecision}: the proportion
+of significant main effects, respectively significant form $\times$ context
+interactions, on which model and human agree in sign. Range $[0,1]$.
 
 \item \textbf{ESR} (Effect Size Ratio): for each \emph{significant} effect,
-$|\Delta_M| / |\Delta_H|$ where $\Delta$ denotes the model or human contrast
-value. ESR $= 1$ means perfect magnitude calibration; ESR $> 1$ means the model
-overshoots. Computed only for significant effects to avoid division by
-near-zero human contrasts.
+$|\Delta_{M,a}| / |\Delta_{H,a}|$. ESR $= 1$ means perfect magnitude
+calibration; ESR $> 1$ means the model overshoots. Computed only for significant
+effects to avoid division by near-zero human contrasts.
 
-\item \textbf{CDS} (Calibration Deviation Score): mean $|$ESR $- 1|$ across
+\item \textbf{CDS} (Calibration Deviation Score): mean $|\text{ESR} - 1|$ across
 significant effects. Lower is better; $0$ = perfect magnitude calibration.
 
 \item \textbf{RMSE}: root mean squared error computed cell-by-cell over all 12
@@ -832,21 +977,28 @@ condition means (3 attributes $\times$ 2 forms $\times$ 2 contexts), after
 rescaling human means to $[-1,1]$. Lower is better.
 \end{itemize}
 
-All metrics are restricted to the four statistically significant effects, with
-the exception of RMSE, which is computed over all 12 conditions to provide a
-global picture of fit across the full data surface. Testing directional agreement
-or magnitude calibration on non-significant effects would be analogous to
-computing ESR on a near-zero human contrast: the sign and magnitude of such
-effects are noise, not signal.
+The directional and calibration metrics (DAS, ISS, ESR, CDS) are computed over
+the four effects that are statistically significant in the human data: the main
+effects of form on $a_{comp}$ and $a_{ped}$, and the form $\times$ context
+interactions on $a_{comp}$ and $a_{like}$. The remaining two of the six possible
+effects, the main effect on $a_{like}$ and the interaction on $a_{ped}$, are
+non-significant and are not assessed, since testing directional agreement or
+magnitude calibration on a near-zero human contrast would treat noise as signal.
+RMSE is the one exception: it is computed cell-by-cell over all twelve condition
+means rather than over effects, giving a global picture of fit across the full
+data surface.
 
 
 \subsection{Balanced Model Fit}
 \label{sec:balancedfit}
 
-Table~\ref{tab:balanced_fit} reports fit metrics for the balanced model
-($\omega = 0.5$, flat priors).
+Table~\ref{tab:balanced_fit} reports the full metric set for the balanced model
+($\omega = 0.5$, flat priors). The focus here is on the calibration metrics ESR,
+CDS, and RMSE; DAS and ISS are included in Table~\ref{tab:balanced_fit} for
+completeness but, as both equal $1.00$, were already discussed in
+Section~\ref{sec:imprecision}.
 
-\begin{table}[ht]
+\begin{table}[t!]
 \centering
 \caption{Quantitative fit of the balanced model ($\omega=0.5$, flat priors)
          against empirical means from Experiment~1 ($N=362$). DAS, ISS, ESR,
@@ -869,24 +1021,21 @@ CDS (overall)     & 0.75 \\
 \end{tabular}
 \end{table}
 
-Two findings stand out. First, the balanced model achieves perfect directional
-agreement on all significant effects: DAS $= 1.00$ and ISS $= 1.00$ mean that
-it correctly reproduces the sign of both significant main effects ($a_{comp}$,
-$a_{ped}$) and both significant interactions ($a_{comp}$, $a_{like}$). This is
-the model's strongest result, because the interactions reflect the
-context-sensitive pragmatic mechanism at the heart of SEM. Second, the model
-overshoots effect magnitudes on main effects: ESR values of approximately
-$2\times$ indicate that SEM predicts roughly twice the human contrast for both
-$a_{comp}$ and $a_{ped}$. This drives CDS (main) to 1.19. CDS for interactions
-(0.31) is substantially better, reflecting more accurate magnitude calibration
-where the model's context-sensitive reasoning does the most work.
+The calibration metrics reveal a systematic pattern the directional check cannot
+see. The balanced model overshoots effect magnitudes on the main effects: ESR
+values of roughly $2\times$ indicate that SEM predicts about twice the human
+contrast for both $a_{comp}$ and $a_{ped}$, driving CDS (main) to $1.19$.
+Calibration on the interactions is markedly better (CDS $= 0.31$, ESR $\approx
+1.3$ for both $a_{comp}$ and $a_{like}$); that is, the model is best calibrated
+precisely where its context-sensitive reasoning does the most work, and
+overshoots on the simpler main effects.
 
 The magnitude overshoot on main effects is a property of the balanced parameter
 setting rather than a structural limitation of the model. A grid search over the
 free parameter space identifies a setting ($\omega = 0.7$, $P(k_p) = 0.9$,
 $P(m_{max}) = 0.5$, $P(m_{sit}) = 0.3$, $P(m_{min}) = 0.2$) that achieves
 near-perfect calibration (CDS $= 0.056$, ESR values of $1.03$, $1.01$, $1.15$,
-$0.96$; RMSE $= 0.165$), while preserving ISS $= 1.00$.
+$0.96$; RMSE $= 0.165$), while preserving $\mathrm{DAS} = \mathrm{ISS} = 1.00$.
 This confirms that the overshoot under balanced parameters reflects the
 uninformative prior choice, not an architectural flaw.\footnote{This is an
 in-sample, post-hoc result: the optimized parameters are tuned to the same 12
@@ -899,10 +1048,11 @@ calibration bound.}
 \subsection{Model Variant Comparison}
 \label{sec:variants}
 
-A central reviewer concern is whether the full SEM's inference machinery adds
-explanatory value beyond simpler alternatives. We address this by comparing the
-full model against three nested ablations, each of which removes one inferential
-component while holding everything else equal:
+A central question for any model of this kind is whether its inference machinery
+adds explanatory value beyond simpler alternatives. We address this by asking
+which of SEM's inferential components are necessary to reproduce the empirical
+pattern, comparing the full model against three nested ablations, each of which
+removes one inferential component while holding everything else equal:
 
 \begin{itemize}
 \item \textbf{SEM-full}: the complete model, all parameters free.
@@ -968,7 +1118,7 @@ directions (ISS $= 1.00$) but is otherwise the weakest: it massively overshoots
 interaction magnitudes (mean ESR $\approx 2.7$, CDS interaction $= 1.79$) and
 has the highest RMSE ($0.51$), because without knowledge inference the competence
 ordering breaks down. The knowledge-only variant achieves the second-lowest RMSE
-($0.39$), reflecting that the CS1 overall ordering is largely epistemic---precise
+($0.39$), reflecting that the study's overall ordering is largely epistemic: precise
 speakers are inferred to have precise knowledge, which is the dominant signal in
 the data. But its ISS of $0.04$ means it fails entirely on the interactions.
 Without motivational inference, the model cannot represent context as modulating
@@ -980,8 +1130,8 @@ Taken together, the full SEM is the only variant that reproduces the interaction
 structure (ISS $= 1.00$) while remaining competitive on global fit (lowest RMSE,
 lowest overall CDS). Every simpler alternative either matches or exceeds it on
 one metric while failing conspicuously on another. This pattern provides
-direct evidence that the model's staged inference---from epistemic state, through
-contextual motivation, to social attribute---is necessary rather than redundant.
+direct evidence that the model's staged inference, from epistemic state through
+contextual motivation, to social attribute, is necessary rather than redundant.
 
 The CDS results also bear on the question of magnitude calibration raised
 above. The interaction CDS difference between the full model ($0.82$) and the
@@ -991,6 +1141,38 @@ contextual motivation inference to calibration. The full model's main-effect CDS
 ($1.06$) is essentially tied with the motivation-only variant ($1.07$),
 confirming that main-effect overshoot is a shared property of the trivalent
 impact scale and not specific to any particular model configuration.
+
+\paragraph{The symmetry of the two inferential dimensions.}
+It would be a misreading of these results to conclude that one inferential
+component is more fundamental than the other. The ablations show that for
+\emph{this} phenomenon both the epistemic and the motivational dimension are
+required, but they do not rank the two: knowledge-only fails on the interactions
+(ISS) and motivation-only fails on calibration, because numerical (im)precision
+happens to load on both dimensions at once, the epistemic dimension securing the
+competence ordering and the motivational dimension securing its context-sensitivity.
+
+Other phenomena need not be balanced in this way. SEM can represent a phenomenon
+in which either dimension is inert, and it can do so in two ways that require no
+change to the model definition. One is through the weight: setting $\omega = 1$
+or $\omega = 0$ removes the motivational or the epistemic contribution to the
+impact function, respectively, which is exactly what the knowledge-only and
+motivation-only ablations do. The other, and more natural where a distinction is
+simply irrelevant, is through the inference domains themselves: a phenomenon in
+which the speaker's knowledge is not at issue is modeled with a single knowledge
+state ($|K| = 1$), and one in which no motivational distinction is relevant with a
+single strategy ($|M| = 1$). In either case the corresponding inference becomes
+vacuous and the social evaluation is driven entirely by the other dimension. A
+purely epistemic phenomenon, such as the social uptake of a scalar implicature,
+where what matters is whether the speaker is taken to know the stronger
+alternative, would be a natural $|M| = 1$ case; a phenomenon in which the
+speaker's knowledge is not in question but their communicative motivation is, as
+in some politeness and register choices (Section~\ref{sem-extension}), would be a
+natural $|K| = 1$ case. The full SEM is required for (im)precision not because the
+architecture privileges any one route, but because this particular phenomenon
+exercises both.
+
+
+
 
 \paragraph{Threshold robustness.}
 The $\phi$ functions are derived at $p < .01$. Re-running the full comparison
@@ -1011,38 +1193,46 @@ in the repository.}
 \label{sec:conclusion}
 % -----------------------------------------------------------------------------
 
+\subsection{Summary of Contributions}
+
 The Social Evaluation Model (SEM) is a probabilistic framework that explains
 how listeners form social impressions of speakers based on their pragmatic
 behavior, integrating cognitive, epistemic, and social reasoning within a
 unified formal architecture. By extending the inferential chain of probabilistic
-pragmatics, SEM shows how linguistic choices---such as the level of numerical
-precision---give rise to evaluations of traits like competence, warmth, and
+pragmatics, SEM shows how linguistic choices, such as the level of numerical
+precision, give rise to evaluations of traits like competence, warmth, and
 pedantry through staged Bayesian inference. The model accurately reproduces the
 key empirical patterns from a matched-guise study on numerical (im)precision: it
 predicts how varying levels of precision affect competence, likeability, and
 pedantry ratings as a function of contextual demands, and the quantitative
-evaluation demonstrates that its staged inference architecture---from epistemic
-state, through contextual motivation, to social attribute---is necessary to
+evaluation demonstrates that its staged inference architecture, from epistemic
+state through contextual motivation, to social attribute, is necessary to
 reproduce the observed pattern. Three nested ablations each fail on a
 structurally distinct dimension, with the context-blind variant providing the
 clearest evidence: removing the context-sensitive motivation strategy collapses
 interaction sensitivity to zero, directly demonstrating that the $m_{sit}$
-mechanism is not decorative.
+mechanism is not decorative. More broadly, the model's staged inference
+architecture is transparent, testable, and quantitatively evaluable, and the
+variant comparison provides direct evidence that each inferential component
+contributes independently to the model's predictions.
 
-\paragraph{Relation to the RSA framework.}
+\subsection{Relation to the RSA Framework}
 The relationship between SEM and the Rational Speech Act framework
 \citep{frank2012,goodman2016} deserves careful discussion. A recurring question
 is whether a new model is needed, or whether the existing RSA architecture could
-be extended to cover social evaluation. We believe there are principled reasons
-for maintaining SEM as a distinct model, alongside its natural compatibility with
-RSA.
+simply be extended to cover social evaluation. Our position is that SEM is best
+understood as a distinct model that \emph{extends} the RSA inferential chain, it
+inherits RSA's core machinery of Bayesian listener inference over utterance
+alternatives, but adds the components needed to make social evaluation an explicit
+target of inference, and that it is naturally compatible with, rather than
+opposed to, RSA.
 
 RSA is a framework for modeling how communicative meaning is derived through
 recursive reasoning about speaker and listener mental states. In standard RSA,
 the speaker selects utterances to maximize a utility function, typically a
 function of informational value and cost; the listener uses Bayes' rule to invert
 this speaker model and recover the intended meaning. Social goals can be
-incorporated into the utility function---as in \citeauthor{yoontessleretal2020}'s
+incorporated into the utility function, as in \citeauthor{yoontessleretal2020}'s
 (\citeyear{yoontessleretal2020}) model of polite speech, which treats politeness
 as a competing goal alongside informativeness. This shows that RSA can be
 extended to encompass some aspects of social reasoning, and we take this as an
@@ -1056,8 +1246,8 @@ make claims about how speakers optimize their utterances (though see below for
 how SEM and RSA can be integrated). Second, SEM replaces the continuous utility
 function of RSA with a discrete set of behavioral strategies, each representing a
 recognizable communicative motivation. This design choice makes the strategies
-directly groundable in empirical data---specifically, in the motivation classes
-that participants attribute to speakers in free-text tasks---and makes the model's
+directly groundable in empirical data, specifically in the motivation classes
+that participants attribute to speakers in free-text tasks, and makes the model's
 parameters interpretable and testable. A utility-based extension of RSA could
 also include social attributes as latent variables, but the mapping from
 utilities to the behavioral diversity captured by SEM's motivation strategies
@@ -1071,7 +1261,7 @@ Taken together, SEM is best understood not as an alternative to RSA but as a
 complementary module that extends the inferential chain one step further: from
 what the speaker meant, to what kind of communicator they are.
 
-\paragraph{Relation to the Social Meaning Game.}
+\subsection{Relation to the Social Meaning Game}
 SEM also relates to the Social Meaning Game (SMG) framework
 \citep{burnett2017,burnett2019,burnett2023}. SMG models how linguistic variation
 acquires indexical social meaning through game-theoretic reasoning: speakers and
@@ -1090,17 +1280,89 @@ meanings over time, while SEM is better suited to explaining how novel or
 context-sensitive pragmatic choices give rise to social evaluations in the moment
 of interpretation.
 
-\paragraph{Contributions and limitations.}
-The case study and quantitative evaluation, taken together, demonstrate SEM's
-potential as a principled framework for modeling the social consequences of
-pragmatic behavior. The model's core contribution is its formalization of social
-evaluation as an explicit target of probabilistic inference, grounded in
-empirical data on attributed motivations. The staged inference
-architecture---from utterance to knowledge state, to motivation, to social
-attribute---is transparent, testable, and quantitatively evaluable. The variant
-comparison provides direct evidence that each inferential component contributes
-independently to the model's predictions.
+\subsection{Extending SEM to Other Social-Meaning Phenomena}
+\label{sem-extension}
 
+Although we have developed and tested SEM on a single phenomenon, numerical
+(im)precision, its architecture is not specific to that domain. SEM applies, in
+principle, wherever three conditions hold: a speaker chooses among
+non-equivalent alternatives, that choice supports inferences about the speaker's
+knowledge state and communicative motivation, and those inferences in turn bear
+on the listener's social evaluation of the speaker. A number of well-studied
+phenomena meet these conditions, and we sketch several here as candidates for
+future modeling.
+
+The most direct extension is to the pragmatic violations studied by
+\citet{beltramapapafragou2023}, who
+%se experiments we discussed in
+%Section~\ref{sec:imprecision}. They 
+show that a speaker's adherence to or
+violation of the Gricean maxims of Relevance and Informativeness shifts listeners'
+evaluations of the speaker's warmth and competence, and, crucially, that the
+\emph{reason} attributed to a violation modulates this effect: an uninformative
+answer attributed to inability is evaluated differently from one attributed to
+unwillingness. This is precisely the structure SEM formalizes. The alternatives
+are the relevant versus irrelevant, informative versus uninformative responses;
+the knowledge states distinguish a speaker who cannot be informative from one who
+can; and the motivation strategies capture why a speaker would withhold relevant
+information. A SEM treatment would represent inability and unwillingness as
+distinct motivation-based strategies with different impact-function signatures on
+warmth and competence, yielding the asymmetry Beltrama and Papafragou observe.
+Because their study elicits social-attribute ratings on the same warmth and
+competence dimensions used here, it is well suited to the quantitative evaluation
+of Section~\ref{sec:evaluation}.
+
+Politeness and indirect speech offer a second candidate. A speaker who chooses an
+indirect or mitigated form over a direct one invites inferences about their
+motives, deference, face-management, or self-presentation, that feed social
+evaluation \citep{brownlevinson1987,LeePinker2010}. Probabilistic models of
+polite language already treat such choices as arising from competing
+informational and social goals: in \citeauthor{yoontessleretal2020}'s
+(\citeyear{yoontessleretal2020}) model, a speaker selects utterances partly to
+manage how they will be perceived, treating \emph{self-presentation} as an
+explicit production goal. This is revealing for SEM, because a speaker's
+self-presentation goal just is an anticipation of the social evaluation a
+listener will form: the speaker reasons about the very inference that SEM models
+on the listener's side. The two models thus describe complementary halves of a
+single social-pragmatic loop, the speaker choosing a form in anticipation of
+being evaluated, the listener evaluating on the basis of that choice, and SEM
+supplies the listener-side component that a self-presenting speaker must
+implicitly represent. We return to this speaker--listener integration in
+Section~\ref{sec:rsa-int}.
+
+A third candidate is the use of \emph{hedging} and uncertainty expressions (e.g.,
+\emph{I think}, \emph{probably}, \emph{might}). The choice between a hedged and an
+unhedged assertion is a choice among non-equivalent alternatives that supports
+inferences about the speaker's epistemic state and their motivation for marking
+it, and these inferences carry social weight. \citet{mccready2015} analyzes
+hedging precisely as a reputation-management device: speakers hedge to protect
+their standing for cooperativity against the cost of an assertion that may turn
+out to be unwarranted. Cast in SEM's terms, this is a motivation strategy whose
+impact-function signature trades perceived competence (a confident, unhedged
+assertion projects knowledge) against the social protection a hedge affords if
+the speaker is wrong, with the social outcome depending on which motivation the
+listener infers. Listeners are demonstrably sensitive to such variation and adapt
+to speaker-specific patterns of uncertainty marking \citep{schusterdegen2020},
+which also makes hedging a natural site for studying the listener variation that
+SEM's free parameters are designed to represent.
+
+A fourth candidate, drawn from a different grammatical domain, is honorification
+and register. \citet{mccready2019} analyzes honorifics as encoding the formality
+a speaker takes to be appropriate to the speech situation; the choice among
+register levels is thus a context-sensitive selection among alternatives that
+conveys social meaning. Where an honorific form is over- or under-used relative to
+situational expectations, listeners draw inferences about the speaker's stance,
+deference, or social competence, an inferential step of exactly the kind SEM
+models, though here the relevant attributes (e.g., respectfulness, social
+fluency) and the role of situational context differ from the precision case.
+
+What unites these phenomena is the structure SEM is built to capture: a choice
+among meaningful alternatives, interpreted through inferences about what the
+speaker knows and why they chose as they did, issuing in a social evaluation.
+Establishing SEM's generality across them, ideally with the same quantitative
+methodology applied here, is a central goal for future work.
+
+\subsection{Limitations}
 Several limitations of the current formulation are worth noting. The trivalent
 functions $\phi_K$ and $\phi_M$ make a simplifying assumption: that a given
 knowledge state or motivation-based strategy has a fixed, consistent impact on a
@@ -1110,13 +1372,37 @@ implications. A more refined model would include an additional inference step
 recovering the probability of each specific motivation given a strategy; we leave
 this generalization to future work. The current model has been evaluated on a
 single empirical case study (numerical imprecision); the framework's
-applicability to other pragmatic domains---for example, politeness phenomena or
-relevance violations---is a natural direction for future empirical work.
+applicability to other pragmatic domains, for example politeness phenomena or
+relevance violations, is a natural direction for future empirical work.
 
-\paragraph{Integration with RSA and future directions.}
+A further simplification concerns the set of social attributes $A$ itself. SEM
+takes $A$ to be a finite set supplied by the modeler, here the attributes
+elicited in the experiment, but in principle the attributes a listener might
+ascribe to a speaker are open-ended. The model is agnostic about which attributes
+populate $A$: any attribute for which the impact functions $\phi_K$ and $\phi_M$
+can be specified (whether fitted from data or stipulated) can be added without
+change to the architecture. What SEM does not currently model is how listeners
+select or generate the relevant attributes in the first place; we take the
+attribute set as given and model the inference from utterance to evaluation along
+it.
+
+A limitation of the current formulation concerns the structure of listener
+variation. As noted in Section~\ref{sec:sem}, the priors and weight $\omega$
+already encode listener-level variation, and the parameter sampling in
+Section~\ref{sec:variants} treats a spread of settings as a population of
+listeners. What this does not capture is \emph{systematic} variation: for
+instance, speaker-specific priors arising from the sensitivity of comprehension
+to speaker identity, or differences in $\omega$ tied to listener traits or social
+relationships. Such structure could be incorporated by conditioning the priors
+or the weight on listener- and speaker-level covariates, and modeling how these
+are themselves inferred; we leave this to future work.
+
+\subsection{Integration with RSA and Future Directions}
+\label{sec:rsa-int}
+
 Looking forward, SEM can be naturally integrated into higher-order models of
 pragmatic reasoning such as RSA. In such an integrated model, the outcomes of
-SEM---listeners' judgments of competence, warmth, or sincerity---become part of
+SEM, listeners' judgments of competence, warmth, or sincerity, become part of
 the speaker's production process: speakers could anticipate the evaluative
 inferences their utterances are likely to elicit, and strategically choose
 expressions that present them favorably. This connects pragmatic reasoning to
@@ -1129,11 +1415,11 @@ future research.
 \bigskip
 
 \noindent\textbf{Data and code availability.}
-% [NOTE FOR REVISION: Insert OSF DOI for experimental data and GitHub link for
-% Python implementation upon submission.]
-The experimental data and R analysis scripts are available at
-\texttt{[OSF LINK TO ADD]}. A Python implementation of the SEM and its
-application to both case studies is available at \texttt{[GITHUB LINK TO ADD]}.
+The experimental data and R analysis scripts are available on the Open Science
+Framework at \url{[ANONYMIZED OSF PROJECT LINK]}; the preregistration for
+Experiment~1 is at \url{[ANONYMIZED OSF PREREG LINK]}. A Python implementation of
+SEM, including a Jupyter notebook that reproduces all analyses and figures
+reported here, is available at \url{[ANONYMIZED GITHUB REPO LINK]}.
 
 
 % -----------------------------------------------------------------------------

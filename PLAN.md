@@ -1,5 +1,29 @@
 # SEM Revision Project — Working Plan
 
+> **✅ COMPLETE — historical planning document.** The project shipped as a
+> **single case study (CS1: numerical (im)precision)**. All code underlying the
+> current manuscript is implemented and tested (**41 tests passing**): impact
+> derivation (`sem/impact_derivation.py`), quantitative fit (`sem/fit.py`), and
+> the nested-ablation variant comparison (`sem/comparison.py`).
+>
+> The following items below were **intentionally descoped** relative to this
+> plan and are *not* part of the final paper:
+> - **RSA baseline** (`baselines/rsa_baseline.py`, Issue 1 / Step B) — RSA is
+>   addressed discursively in the paper (§"Relation to the RSA Framework"), not
+>   as code; `baselines/` is empty.
+> - **Norm-violation baseline** (`baselines/norm_violation_baseline.py`,
+>   Issue 2 / Step C) — replaced by the variant comparison (paper Table 2).
+> - **Programmatic Bayesian-network figure** (`figures/generate_bayesian_network.py`,
+>   Step E) — `semNet.pdf` is hand-drawn.
+> - **Case Study 2** (`case_studies/cs2_pragmatic_violations.py`) — exists in
+>   code and tests but is *not* in the paper; it now appears only as future work
+>   (§"Extending SEM…"). The paper is **CS1-only**.
+>
+> Repo-structure, test-count, and "to be created" notes below are stale.
+> This file (with `TASKS.md` and `README.md`) is slated for the deferred
+> repo cleanup gated on manuscript finalization; it is retained as-is for
+> historical context.
+
 ## Context
 
 This repository contains the Python implementation of the **Social Evaluation
