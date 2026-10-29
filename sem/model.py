@@ -172,11 +172,11 @@ class SEMScenario:
         P(k|v[,c]) — posterior over knowledge states given utterance v.
 
         staged (Eq. 1): P(k|v) ∝ P(k) χ_t(k,v); c is ignored.
-        joint:          P(k|v,c) ∝ P(k) Σ_m P(m) χ_m(c,k,v); requires c.
+        joint:          P(k|v,c) ∝ P(k) χ_t(k,v) Σ_m P(m) χ_m(c,k,v); requires c.
         """
         if self.inference == "joint":
             def _weight(kk: KnowState) -> float:
-                return self.priors_K[kk] * sum(
+                return self.priors_K[kk] * self.chi_t(kk, v) * sum(
                     self.priors_M[m] * self.chi_m(m, c, kk, v)
                     for m in self.strategies
                 )
