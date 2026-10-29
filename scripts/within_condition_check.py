@@ -30,15 +30,19 @@ P,C=stats(df),stats(cent)
 print('\nper-proxy: diff / p  (pooled | within-condition)')
 for k in P:
     print(f"{k[0]:6}{k[1]:7}{k[2]:13} n={P[k][2]:3}  {P[k][0]:+.2f} p={P[k][1]:.4f} | {C[k][0]:+.2f} p={C[k][1]:.4f}")
+results = {}
 for alpha in [.001,.01,.05,.10]:
     tp,tc=table(P,alpha),table(C,alpha)
     print(f"\nalpha={alpha}   pooled | within   (! = differs)")
     for v in MAP:
         print(f"{v:6}"+"  ".join(f"{at[2:]}:{tp[(v,at)]:+d}|{tc[(v,at)]:+d}{'!' if tp[(v,at)]!=tc[(v,at)] else ' '}" for at in ATT))
-    print('non-zero pooled', sum(x!=0 for x in tp.values()), 'within', sum(x!=0 for x in tc.values()),
-          '| sign flips', sum(tp[k]*tc[k]==-1 for k in tp))
+    nzp=sum(x!=0 for x in tp.values()); nzc=sum(x!=0 for x in tc.values())
+    sf=sum(tp[k]*tc[k]==-1 for k in tp)
+    print('non-zero pooled', nzp, 'within', nzc, '| sign flips', sf)
+    results[str(alpha)] = {"non_zero_pooled": nzp, "non_zero_within": nzc, "sign_flips": sf}
 
 import numpy as np
+from sem.comparison import sample_parameters
 K=["k_p","k_np"]; M=["m_max","m_sit","m_min"]
 def tru(k): return ["v_prc","v_apx"] if k=="k_p" else ["v_apx"]
 def strat(m,c,k):
@@ -61,12 +65,20 @@ def effects(T,w,pk,pm):
     main=lambda a: e(a,'v_prc','c_HP')+e(a,'v_prc','c_LP')-e(a,'v_apx','c_HP')-e(a,'v_apx','c_LP')
     inter=lambda a: (e(a,'v_prc','c_HP')-e(a,'v_apx','c_HP'))-(e(a,'v_prc','c_LP')-e(a,'v_apx','c_LP'))
     return [main('a_comp')>0, main('a_ped')>0, inter('a_comp')>0, inter('a_like')>0]
-rng=np.random.default_rng(42)
-samples=[(float(np.clip(rng.beta(2,2),.05,.95)),rng.dirichlet([1,1]),rng.dirichlet([1,1,1])) for _ in range(100)]
+samples = sample_parameters("full", n_samples=100, seed=42)
 print('\nBalanced model (w=.5, flat) effects 1-4 reproduced? | sampled: all four reproduced in x/100')
 for alpha in [.001,.01,.05,.10]:
     for name,st in [('pooled',P),('within',C)]:
         T=table(st,alpha)
         b=effects(T,.5,{'k_p':.5,'k_np':.5},{m:1/3 for m in M})
-        s=sum(all(effects(T,w,dict(zip(K,pk)),dict(zip(M,pm)))) for w,pk,pm in samples)
+        s=sum(all(effects(T,samp["omega"],samp["priors_K"],samp["priors_M"])) for samp in samples)
         print(f"alpha={alpha:<5} {name:7} balanced={['✓' if x else '✗' for x in b]}  sampled={s}/100")
+        results[str(alpha)][f"balanced_{name}"] = b
+        results[str(alpha)][f"sampled_all4_{name}"] = s
+
+import json, os
+out_path = 'data/cs1_experiment/processed/within_condition_check_cs1.json'
+os.makedirs(os.path.dirname(out_path), exist_ok=True)
+with open(out_path, 'w') as f:
+    json.dump(results, f, indent=2)
+print(f'\nResults written to {out_path}')

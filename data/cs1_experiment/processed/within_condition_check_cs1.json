@@ -1,0 +1,78 @@
+{
+  "0.001": {
+    "non_zero_pooled": 5,
+    "non_zero_within": 0,
+    "sign_flips": 0,
+    "balanced_pooled": [
+      true,
+      true,
+      false,
+      true
+    ],
+    "sampled_all4_pooled": 16,
+    "balanced_within": [
+      false,
+      false,
+      false,
+      false
+    ],
+    "sampled_all4_within": 0
+  },
+  "0.01": {
+    "non_zero_pooled": 7,
+    "non_zero_within": 2,
+    "sign_flips": 0,
+    "balanced_pooled": [
+      true,
+      true,
+      true,
+      true
+    ],
+    "sampled_all4_pooled": 100,
+    "balanced_within": [
+      true,
+      false,
+      true,
+      true
+    ],
+    "sampled_all4_within": 0
+  },
+  "0.05": {
+    "non_zero_pooled": 10,
+    "non_zero_within": 5,
+    "sign_flips": 1,
+    "balanced_pooled": [
+      true,
+      true,
+      true,
+      true
+    ],
+    "sampled_all4_pooled": 100,
+    "balanced_within": [
+      true,
+      false,
+      true,
+      true
+    ],
+    "sampled_all4_within": 0
+  },
+  "0.1": {
+    "non_zero_pooled": 11,
+    "non_zero_within": 9,
+    "sign_flips": 1,
+    "balanced_pooled": [
+      true,
+      true,
+      true,
+      true
+    ],
+    "sampled_all4_pooled": 100,
+    "balanced_within": [
+      true,
+      true,
+      true,
+      true
+    ],
+    "sampled_all4_within": 100
+  }
+}
