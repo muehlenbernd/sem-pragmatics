@@ -132,6 +132,7 @@ def build_scenario(
     omega: float = 0.5,
     priors_K: Dict[str, float] = None,
     priors_M: Dict[str, float] = None,
+    inference: str = "staged",
 ) -> SEMScenario:
     """
     Return a SEMScenario configured for Case Study 1 (imprecision).
@@ -144,6 +145,8 @@ def build_scenario(
         Prior probabilities over knowledge states. Uniform if None.
     priors_M : dict, optional
         Prior probabilities over strategies. Uniform if None.
+    inference : str
+        Knowledge inference mode: "staged" (default) or "joint".
     """
     return SEMScenario(
         utterances       = UTTERANCES,
@@ -158,6 +161,7 @@ def build_scenario(
         priors_K         = priors_K or {},
         priors_M         = priors_M or {},
         omega            = omega,
+        inference        = inference,
     )
 
 

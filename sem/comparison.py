@@ -110,6 +110,7 @@ def evaluate_variant(
     empirical_json_path: str,
     n_samples: int = 100,
     seed: int = 42,
+    inference: str = "staged",
 ) -> List[Dict]:
     """
     Evaluate ``variant`` across ``n_samples`` sampled parameter combinations.
@@ -134,7 +135,8 @@ def evaluate_variant(
     results: List[Dict] = []
     for s in samples:
         scenario = build_scenario(
-            omega=s["omega"], priors_K=s["priors_K"], priors_M=s["priors_M"]
+            omega=s["omega"], priors_K=s["priors_K"], priors_M=s["priors_M"],
+            inference=inference,
         )
         model_scores = scenario.evaluate_all()
         metrics = fit.evaluate(model_scores, empirical_json_path)
@@ -177,11 +179,13 @@ def compare_all_variants(
     empirical_json_path: str,
     n_samples: int = 100,
     seed: int = 42,
+    inference: str = "staged",
 ) -> Dict:
     """Run ``evaluate_variant`` + ``summarize_results`` for all four variants."""
     return {
         variant: summarize_results(
-            evaluate_variant(variant, empirical_json_path, n_samples, seed)
+            evaluate_variant(variant, empirical_json_path, n_samples, seed,
+                             inference=inference)
         )
         for variant in VARIANTS
     }

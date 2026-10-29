@@ -129,8 +129,13 @@ class SEMScenario:
     priors_K        : PriorDict = field(default_factory=dict)
     priors_M        : PriorDict = field(default_factory=dict)
     omega           : float = 0.5
+    inference       : str = "staged"
 
     def __post_init__(self):
+        if self.inference not in {"staged", "joint"}:
+            raise ValueError(
+                f"inference must be 'staged' or 'joint', got {self.inference!r}"
+            )
         # Set uniform priors if not provided
         if not self.priors_K:
             n = len(self.knowledge_states)
@@ -162,19 +167,28 @@ class SEMScenario:
     # Probability functions (Equations 2 and 3)
     # ------------------------------------------------------------------
 
-    def prob_k(self, k: KnowState, v: Utterance) -> float:
+    def prob_k(self, k: KnowState, v: Utterance, c: Context = None) -> float:
         """
-        P(k|v) — posterior probability over knowledge states given utterance v.
-        Equation 2 in the paper.
+        P(k|v[,c]) — posterior over knowledge states given utterance v.
+
+        staged (Eq. 1): P(k|v) ∝ P(k) χ_t(k,v); c is ignored.
+        joint:          P(k|v,c) ∝ P(k) Σ_m P(m) χ_m(c,k,v); requires c.
         """
-        numerator   = self.priors_K[k] * self.chi_t(k, v)
-        denominator = sum(
-            self.priors_K[k2] * self.chi_t(k2, v)
-            for k2 in self.knowledge_states
-        )
-        if denominator == 0.0:
-            return 0.0
-        return numerator / denominator
+        if self.inference == "joint":
+            def _weight(kk: KnowState) -> float:
+                return self.priors_K[kk] * sum(
+                    self.priors_M[m] * self.chi_m(m, c, kk, v)
+                    for m in self.strategies
+                )
+            z = sum(_weight(kk) for kk in self.knowledge_states)
+            return _weight(k) / z if z > 0.0 else 0.0
+        else:  # staged
+            numerator   = self.priors_K[k] * self.chi_t(k, v)
+            denominator = sum(
+                self.priors_K[k2] * self.chi_t(k2, v)
+                for k2 in self.knowledge_states
+            )
+            return numerator / denominator if denominator > 0.0 else 0.0
 
     def prob_m(self, m: Strategy, k: KnowState, c: Context, v: Utterance) -> float:
         """
@@ -223,7 +237,7 @@ class SEMScenario:
         for k in self.knowledge_states:
             for m in self.strategies:
                 score += (
-                    self.prob_k(k, v)
+                    self.prob_k(k, v, c)
                     * self.prob_m(m, k, c, v)
                     * self.impact(a, k, m)
                 )
