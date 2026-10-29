@@ -47,6 +47,7 @@ sem-pragmatics/
 │   ├── fit.py                    # Fit metrics (DAS, ISS, ESR, CDS, RMSE, CCC)
 │   ├── comparison.py             # Variant comparison and parameter sampling
 │   ├── impact_derivation.py      # φ tables from Task 2 motivation data
+│   ├── access_split.py           # Access-split listener (Session G)
 │   └── plotting.py               # Figure generation
 ├── case_studies/                 # Scenario configurations
 │   ├── cs1_imprecision.py        # Case Study 1: precise vs. approximate
@@ -57,16 +58,19 @@ sem-pragmatics/
 │   ├── within_condition_check.py # Within-condition robustness check
 │   ├── compute_empirical_means.py
 │   ├── exp2_knowledge_test.py    # Exp. 2 held-out test (D1)
+│   ├── exp2_knowledge_followup.py # Session F follow-up analyses (a)–(d)
+│   ├── exp2_access_split.py      # Session G access-split analysis
 │   └── dev/                      # Helpers that rebuild notebooks
 ├── data/                         # Experimental data
 │   ├── README.md                 # Data description
 │   └── cs1_experiment/           # Data for Case Study 1
 ├── docs/                         # Design notes
 │   ├── staged_vs_joint.md        # Staged vs. joint listener
+│   ├── access_split.md           # Access-split listener model
 │   └── impact_mapping_rationale.md
 ├── notebooks/                    # Interactive examples
 │   └── sem_demo.ipynb
-├── tests/                        # Pytest suite (57 tests, 2 slow)
+├── tests/                        # Pytest suite (79 tests, 2 slow)
 ├── figures/                      # Generated figures (gitignored)
 ├── requirements.txt
 └── README.md                     # This file
@@ -151,7 +155,7 @@ discussion of where the paper addresses the two options (Section 5.5).
 ## Running Tests
 
 ```bash
-PYTHONPATH=. python -m pytest -q          # 57 tests, 2 slow skipped
+PYTHONPATH=. python -m pytest -q          # 79 tests, 2 slow skipped
 PYTHONPATH=. python -m pytest -q --slow   # includes the .02 parameter grid
 ```
 

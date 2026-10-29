@@ -326,27 +326,38 @@ def sweep_linearity(jdata: Dict, delta_ci_dict: Dict) -> Dict:
     ])  # (3, 2)
 
     results = {}
+    rng = np.random.default_rng(42)
+    e1 = pd.read_csv(E1_PATH)
+    e2 = pd.read_csv(E2_PATH)
+
     for inference in ["staged", "joint"]:
-        # D: predicted Δ per approx cell from the stored sweep at P0=0
-        # Under staged, Δ(P0) = (1-P0)*D iff linearity holds.
-        # Compute E_base(P0=0) and E_know(P0=1)
-        know = build_scenario(priors_K={"k_p": 1.0, "k_np": 0.0}, inference=inference)
+        # Full shift vector D: Δ predicted from P0=0 baseline to P0=1.
+        know  = build_scenario(priors_K={"k_p": 1.0, "k_np": 0.0}, inference=inference)
         base0 = build_scenario(priors_K={"k_p": 0.0, "k_np": 1.0}, inference=inference)
-        E_know_apx = np.array([[know.evaluate_all()[a]["v_apx"][c] for c in CTXS] for a in ATTRS])
-        E_base0_apx = np.array([[base0.evaluate_all()[a]["v_apx"][c] for c in CTXS] for a in ATTRS])
-        D = E_know_apx - E_base0_apx  # (3, 2)
+        bal   = build_scenario(priors_K={"k_p": 0.5, "k_np": 0.5}, inference=inference)
+        E_know_apx    = np.array([[know.evaluate_all()[a]["v_apx"][c]  for c in CTXS] for a in ATTRS])
+        E_base0_apx   = np.array([[base0.evaluate_all()[a]["v_apx"][c] for c in CTXS] for a in ATTRS])
+        E_bal_apx     = np.array([[bal.evaluate_all()[a]["v_apx"][c]   for c in CTXS] for a in ATTRS])
+        D     = E_know_apx - E_base0_apx   # full shift (P0=0 → P0=1)
+        D_bal = E_know_apx - E_bal_apx     # shift from balanced model (P0=0.5 → P0=1)
 
-        # Closed-form P0*
-        dot_obs_D = float(np.dot(obs_apx.ravel(), D.ravel()))
-        dot_D_D   = float(np.dot(D.ravel(), D.ravel()))
-        frac = dot_obs_D / dot_D_D  # <obs,D>/<D,D>
-        p0_closed = float(np.clip(1.0 - frac, 0.0, 1.0))
+        dot_obs_D     = float(np.dot(obs_apx.ravel(), D.ravel()))
+        dot_D_D       = float(np.dot(D.ravel(), D.ravel()))
+        dot_obs_D_bal = float(np.dot(obs_apx.ravel(), D_bal.ravel()))
+        dot_D_bal     = float(np.dot(D_bal.ravel(), D_bal.ravel()))
 
-        # Check linearity numerically over the sweep grid
+        # Fractions (valid for staged; for joint, non-linearity means these are
+        # only least-squares approximations — see below)
+        frac     = dot_obs_D     / dot_D_D       # relative to P0=0
+        frac_bal = dot_obs_D_bal / dot_D_bal      # relative to balanced model
+
+        p0_closed     = float(np.clip(1.0 - frac, 0.0, 1.0))
+        p0_bal_closed = float(np.clip(1.0 - frac_bal, 0.0, 1.0))
+
+        # Check linearity: under staged, Δ(P0) = (1−P0)·D exactly.
+        # Under joint, this does not hold.
         p_vals = np.arange(0.01, 1.001, 0.01)[:100]
         pred_linear = np.array([(1 - p) * D for p in p_vals])  # (100, 3, 2)
-
-        # Actual predicted Δ from sweep
         pred_actual = np.zeros((len(p_vals), 3, 2))
         for i, p in enumerate(p_vals):
             base_i = build_scenario(priors_K={"k_p": float(p), "k_np": float(1-p)},
@@ -355,15 +366,13 @@ def sweep_linearity(jdata: Dict, delta_ci_dict: Dict) -> Dict:
             for ai, a in enumerate(ATTRS):
                 for ci, c in enumerate(CTXS):
                     pred_actual[i, ai, ci] = E_know_apx[ai, ci] - scores_i[a]["v_apx"][c]
-
         max_linear_error = float(np.max(np.abs(pred_actual - pred_linear)))
         is_linear = max_linear_error < 1e-9
+        closed_form_applies = is_linear   # closed form is exact only when linear
 
-        # Bootstrap CI for frac (= 1 - P0*)
-        rng = np.random.default_rng(42)
-        e1 = pd.read_csv(E1_PATH)
-        e2 = pd.read_csv(E2_PATH)
-        frac_boot = []
+        # Bootstrap CIs (same procedure and seed as used in this function)
+        frac_boot     = []
+        frac_bal_boot = []
         for _ in range(2000):
             delta_b = np.zeros((3, 2))
             for ai, a_sem in enumerate(ATTRS):
@@ -378,20 +387,24 @@ def sweep_linearity(jdata: Dict, delta_ci_dict: Dict) -> Dict:
                                    random_state=int(rng.integers(2**31)))[raw_col]
                     delta_b[ai, ci] = (normalize_likert(float(s2.mean()))
                                        - normalize_likert(float(s1.mean())))
-            f_b = float(np.dot(delta_b.ravel(), D.ravel())) / dot_D_D
-            frac_boot.append(f_b)
+            frac_boot.append(float(np.dot(delta_b.ravel(), D.ravel())) / dot_D_D)
+            frac_bal_boot.append(float(np.dot(delta_b.ravel(), D_bal.ravel())) / dot_D_bal)
 
-        frac_arr = np.array(frac_boot)
-        ci_lo_frac = round(float(np.percentile(frac_arr, 2.5)), 3)
-        ci_hi_frac = round(float(np.percentile(frac_arr, 97.5)), 3)
+        fa = np.array(frac_boot)
+        ci_lo_frac  = round(float(np.percentile(fa, 2.5)), 3)
+        ci_hi_frac  = round(float(np.percentile(fa, 97.5)), 3)
         p0_ci_lo = round(float(np.clip(1.0 - ci_hi_frac, 0.0, 1.0)), 3)
         p0_ci_hi = round(float(np.clip(1.0 - ci_lo_frac, 0.0, 1.0)), 3)
+
+        fb = np.array(frac_bal_boot)
+        ci_lo_frac_bal = round(float(np.percentile(fb, 2.5)), 3)
+        ci_hi_frac_bal = round(float(np.percentile(fb, 97.5)), 3)
 
         # Per-cell: D, obs, sign match
         per_cell = []
         for ai, a in enumerate(ATTRS):
             for ci, c in enumerate(CTXS):
-                d_val = round(float(D[ai, ci]), 4)
+                d_val   = round(float(D[ai, ci]), 4)
                 obs_val = round(float(obs_apx[ai, ci]), 4)
                 sign_match = (d_val > 0) == (obs_val > 0) if obs_val != 0 else None
                 per_cell.append({
@@ -399,26 +412,33 @@ def sweep_linearity(jdata: Dict, delta_ci_dict: Dict) -> Dict:
                     "D": d_val, "obs_delta": obs_val,
                     "sign_match": sign_match,
                 })
-
         n_sign_match = sum(1 for x in per_cell if x["sign_match"] is True)
-
-        # SSE-grid P0* (from stored JSON)
         p0_grid = jdata[f"d1_step5_{inference}"]["p0_primary"]
 
         results[inference] = {
-            "D": D.tolist(),
-            "frac": round(frac, 4),
-            "frac_pct": round(frac * 100, 1),
-            "frac_ci": (ci_lo_frac, ci_hi_frac),
-            "frac_ci_pct": (round(ci_lo_frac*100, 1), round(ci_hi_frac*100, 1)),
-            "p0_closed": round(p0_closed, 4),
-            "p0_grid": p0_grid,
-            "p0_ci_from_frac": (p0_ci_lo, p0_ci_hi),
-            "is_linear": is_linear,
-            "max_linear_error": round(max_linear_error, 12),
-            "per_cell": per_cell,
-            "n_sign_match": n_sign_match,
+            "D":     D.tolist(),
+            "D_bal": D_bal.tolist(),
+            "is_linear":          is_linear,
+            "max_linear_error":   round(max_linear_error, 12),
+            "closed_form_applies": closed_form_applies,
+            # Fraction relative to P0 = 0
+            "frac":        round(frac, 4),
+            "frac_pct":    round(frac * 100, 1),
+            "frac_ci":     (ci_lo_frac, ci_hi_frac),
+            "frac_ci_pct": (round(ci_lo_frac * 100, 1), round(ci_hi_frac * 100, 1)),
+            "p0_closed":        round(p0_closed, 4),
+            "p0_ci_from_frac":  (p0_ci_lo, p0_ci_hi),
             "upper_bound_at_boundary": p0_ci_hi == 1.0,
+            # Fraction relative to balanced model
+            "frac_bal":        round(frac_bal, 4),
+            "frac_bal_pct":    round(frac_bal * 100, 1),
+            "frac_bal_ci":     (ci_lo_frac_bal, ci_hi_frac_bal),
+            "frac_bal_ci_pct": (round(ci_lo_frac_bal * 100, 1), round(ci_hi_frac_bal * 100, 1)),
+            "p0_bal_closed":   round(p0_bal_closed, 4),
+            # Grid P0* (from stored JSON)
+            "p0_grid": p0_grid,
+            "per_cell":      per_cell,
+            "n_sign_match":  n_sign_match,
         }
 
     return results
@@ -602,31 +622,50 @@ def write_report(out: Dict, path: str) -> None:
     L("")
 
     # ---- (d) Sweep linearity ----
-    h2("(d) Sweep linearity: closed-form P0* and fraction of predicted shift")
+    h2("(d) Sweep linearity: fractions of predicted shift and P0*")
 
-    for inference in ["staged", "joint"]:
-        r = out["sweep_linearity"][inference]
-        L(f"\n### {inference.capitalize()} listener\n")
+    # --- Staged ---
+    r_st = out["sweep_linearity"]["staged"]
+    L("\n### Staged listener\n")
+    L(f"**Linearity holds:** {r_st['is_linear']} "
+      f"(max deviation from (1−P0)·D: {r_st['max_linear_error']:.2e})\n")
 
-        L(f"**Linearity holds:** {r['is_linear']} "
-          f"(max deviation from (1−P0)·D: {r['max_linear_error']:.2e})\n")
+    flo, fhi = r_st["frac_ci_pct"]
+    L(f"**Fraction relative to P0 = 0** (full shift D): "
+      f"{r_st['frac_pct']} % (95 % boot CI: [{flo}, {fhi}] %)\n")
 
-        frac_lo, frac_hi = r["frac_ci_pct"]
-        L(f"**Fraction of predicted shift realized in data:** "
-          f"{r['frac_pct']} % (95 % boot CI: [{frac_lo}, {frac_hi}] %)\n")
-        L(f"**Closed-form P0* = 1 − frac:** {r['p0_closed']:.3f}  "
-          f"(grid sweep gave P0* = {r['p0_grid']})\n")
-        L(f"**Bootstrap CI for P0*:** [{r['p0_ci_from_frac'][0]}, {r['p0_ci_from_frac'][1]}]\n")
-        if r["upper_bound_at_boundary"]:
-            L("*Note: upper bound = 1.0 is the boundary of the parameter space "
-              "(clipped), not a posterior estimate.*\n")
+    fblo, fbhi = r_st["frac_bal_ci_pct"]
+    L(f"**Fraction relative to balanced model (P0 = 0.5)** (shift D_bal = 0.5·D): "
+      f"{r_st['frac_bal_pct']} % (95 % boot CI: [{fblo}, {fbhi}] %)\n")
 
-        row("attr", "context", "D (full predicted shift)", "obs Δ", "sign matches D")
-        sep(5)
-        for cell in r["per_cell"]:
-            agree_str = "✓" if cell["sign_match"] else ("✗" if cell["sign_match"] is False else "–")
-            row(cell["attr"], cell["context"], cell["D"], cell["obs_delta"], agree_str)
-        L(f"\n*Sign matches: {r['n_sign_match']}/6 approximate cells.*\n")
+    L(f"**Closed-form P0* (from P0 = 0 fraction):** {r_st['p0_closed']:.3f}  "
+      f"(grid sweep gave P0* = {r_st['p0_grid']})\n")
+    L(f"**Bootstrap CI for P0*:** [{r_st['p0_ci_from_frac'][0]}, {r_st['p0_ci_from_frac'][1]}]\n")
+    if r_st.get("upper_bound_at_boundary"):
+        L("*Note: upper bound = 1.0 is the boundary of the parameter space "
+          "(clipped), not a posterior estimate.*\n")
+
+    row("attr", "context", "D (full predicted shift)", "obs Δ", "sign matches D")
+    sep(5)
+    for cell in r_st["per_cell"]:
+        agree_str = "✓" if cell["sign_match"] else ("✗" if cell["sign_match"] is False else "–")
+        row(cell["attr"], cell["context"], cell["D"], cell["obs_delta"], agree_str)
+    L(f"\n*Sign matches: {r_st['n_sign_match']}/6 approximate cells.*\n")
+
+    # --- Joint ---
+    r_jt = out["sweep_linearity"]["joint"]
+    L("\n### Joint listener\n")
+    L(f"**Linearity does NOT hold** (max deviation from (1−P0)·D: "
+      f"{r_jt['max_linear_error']:.2e}). The closed-form P0* formula is only "
+      f"exact under the staged listener; it does not apply here.\n")
+    L(f"**Grid-sweep P0*:** {r_jt['p0_grid']} (from stored JSON; SSE minimization "
+      f"over the same grid as the robustness sweep).\n")
+    row("attr", "context", "D (joint; full predicted shift)", "obs Δ", "sign matches D")
+    sep(5)
+    for cell in r_jt["per_cell"]:
+        agree_str = "✓" if cell["sign_match"] else ("✗" if cell["sign_match"] is False else "–")
+        row(cell["attr"], cell["context"], cell["D"], cell["obs_delta"], agree_str)
+    L(f"\n*Sign matches: {r_jt['n_sign_match']}/6 approximate cells.*\n")
 
     with open(path, "w") as fh:
         fh.write("\n".join(lines))
