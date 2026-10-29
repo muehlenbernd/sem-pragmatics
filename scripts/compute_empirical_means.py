@@ -53,14 +53,20 @@ def compute_means(data_path: str = DATA_PATH) -> dict:
 
 
 def main() -> None:
-    means = compute_means(DATA_PATH)
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--data", default=DATA_PATH)
+    parser.add_argument("--out",  default=OUT_PATH)
+    args = parser.parse_args()
 
-    os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
-    with open(OUT_PATH, "w") as fh:
+    means = compute_means(args.data)
+
+    os.makedirs(os.path.dirname(args.out), exist_ok=True)
+    with open(args.out, "w") as fh:
         json.dump(means, fh, indent=2)
 
     # Summary table for manual sanity-checking (12 means).
-    print(f"Wrote {OUT_PATH}")
+    print(f"Wrote {args.out}")
     print(f"N = {means['_meta']['n_total']}  "
           f"per-condition: {means['_meta']['n_per_condition']}\n")
     print(f"{'attribute':<10}{'form':<8}{'c_HP':>8}{'c_LP':>8}")
