@@ -4,17 +4,18 @@ sem/model.py
 Core implementation of the Social Evaluation Model (SEM).
 
 Paper reference:
-    "Modeling Pragmatic Reasoning behind Social Meaning"
-    Journal: Open Mind (submitted); target resubmission: Meaning
+    "Modeling Pragmatic Reasoning behind Social Meaning"  (under review)
 
 Mathematical summary
 --------------------
-The listener's evaluation function (Eq. 1 in the paper) is:
+The listener's evaluation function (Eq. 4 in the paper) is:
 
-    E_L(a | v, c) = Σ_k Σ_m  P(k|v) · P(m|k,v,c) · I(a|k,m; ω)
+    E_L(a | u, c) = Σ_k Σ_m  P(k|u) · P(m|k,u,c) · I(a|k,m; ω)
+
+Note: the paper writes `u` for utterance; the code uses `v` (v_prc, v_apx).
 
 where:
-    v  ∈ V   — utterance chosen by the speaker
+    u  ∈ V   — utterance chosen by the speaker (written `v` in the code)
     c  ∈ C   — situational context
     k  ∈ K   — knowledge state of the speaker
     m  ∈ M   — motivation-based strategy of the speaker
@@ -22,15 +23,16 @@ where:
 
 The three components are:
 
-(1) P(k|v)  — knowledge state posterior (Eq. 2):
-        P(k|v) = P(k) · χ_t(k,v) / Σ_{k'} P(k') · χ_t(k',v)
-    χ_t(k,v) = 1 if v is truthful under k, else 0
+(1) P(k|u)  — knowledge state posterior (Eq. 1):
+        staged:  P(k|u) ∝ P(k) · χ_t(k,u)
+        joint:   P(k|u,c) ∝ P(k) · χ_t(k,u) · Σ_m P(m) · χ_m(c,k,u)
+    χ_t(k,u) = 1 if u is truthful under k, else 0
 
-(2) P(m|k,v,c)  — strategy posterior (Eq. 3):
-        P(m|k,v,c) = P(m) · χ_m(c,k,v) / Σ_{m'} P(m') · χ_m(c,k',v)
-    χ_m(c,k,v) = 1 if strategy m selects v in context c with knowledge k
+(2) P(m|k,u,c)  — strategy posterior (Eq. 2):
+        P(m|k,u,c) = P(m) · χ_m(c,k,u) / Σ_{m'} P(m') · χ_m(c,k,u)
+    χ_m(c,k,u) = 1 if strategy m selects u in context c with knowledge k
 
-(3) I(a|k,m; ω)  — impact function (Eq. 4):
+(3) I(a|k,m; ω)  — impact function (Eq. 3):
         I(a|k,m; ω) = ω · φ_K(k,a) + (1-ω) · φ_M(m,a)
     φ_K, φ_M ∈ {-1, 0, 1}  (trivalent impact functions)
     ω ∈ (0,1)               (weight: knowledge vs. motivation)
