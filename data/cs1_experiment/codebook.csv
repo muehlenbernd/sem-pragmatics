@@ -1,0 +1,43 @@
+column,group,type,values,description
+id,metadata,integer,1–752,Row identifier (sequential within each experiment file)
+participant_id,metadata,integer,5-digit integer,Participant ID
+scenario,experimental,string,"absence, bike, cinema, conference, cooking, house",The scenario presented to the participant
+context,experimental,string,"highPr, lowPr",Precision requirements of the context: highPr = high precision required; lowPr = low precision required
+form,experimental,string,"precise, approx",The numerical form used by the speaker in the scenario: precise = exact value; approx = approximate value
+knowledge,experimental,string,"unknown, knowl",Speaker knowledge state: unknown = unspecified (Experiment 1); knowl = speaker established to have precise information available (Experiment 2)
+competent,task1_rating,integer,1–7,Participant rating of speaker on COMPETENT (1 = not at all competent; 7 = very competent)
+well_prepared,task1_rating,integer,1–7,Participant rating of speaker on WELL-PREPARED (1 = not at all well-prepared; 7 = very well-prepared)
+knowledgeable,task1_rating,integer,1–7,Participant rating of speaker on KNOWLEDGEABLE (1 = not at all knowledgeable; 7 = very knowledgeable)
+helpful,task1_rating,integer,1–7,Participant rating of speaker on HELPFUL (1 = not at all helpful; 7 = very helpful)
+likeable,task1_rating,integer,1–7,Participant rating of speaker on LIKEABLE (1 = not at all likeable; 7 = very likeable)
+pedantic,task1_rating,integer,1–7,Participant rating of speaker on PEDANTIC (1 = not at all pedantic; 7 = very pedantic)
+t2_response,task2_freetext,string,free text,Participant's free-text response explaining why the speaker chose a precise (or approximate) form
+t2_knewExact,task2_annotation,binary,0/1,"Manual annotation: speaker knew / was confident about the exact or precise information (class knewExact in Solt et al. in revision; top-10 category, rank 6 by frequency)"
+t2_notKnow,task2_annotation,binary,0/1,"Manual annotation: speaker did not know / was not sure / did not remember the exact information (class notKnow; top-10 category, rank 1)"
+t2_fussyPerson,task2_annotation,binary,0/1,"Manual annotation: speaker is pedantic / detail-oriented / a fussy person (class fussyPerson; top-10 category, rank 4)"
+t2_easySpeaker,task2_annotation,binary,0/1,"Manual annotation: using the approximate/precise form was easier or faster for the speaker (class easySpeaker; top-10 category, rank 10)"
+t2_usualApx,task2_annotation,binary,0/1,"Manual annotation: the speaker usually uses approximate forms (class usualApx; top-10 category, rank 9)"
+t2_needed,task2_annotation,binary,0/1,"Manual annotation: the level of precision was needed / required / called for / sufficient in the situation (class needed; top-10 category, rank 2)"
+t2_realWorld,task2_annotation,binary,0/1,"Manual annotation: real-world consequences of the communicated information were relevant (class realWorld; top-10 category, rank 3)"
+t2_purpose,task2_annotation,binary,0/1,"Manual annotation: speaker was purposefully precise or approximate (class purpose; top-10 category, rank 8)"
+t2_infoNotAvail,task2_annotation,binary,0/1,"Manual annotation: precise information was not available to the speaker in the situation (class infoNotAvail; top-10 category, rank 7)"
+t2_infoAvail,task2_annotation,binary,0/1,"Manual annotation: precise information was available to the speaker (class infoAvail; top-10 category, rank 5)"
+t2_cautious,task2_annotation,binary,0/1,Manual annotation: speaker was being cautious about what they communicated (outside top-10 categories)
+t2_presentation,task2_annotation,binary,0/1,Manual annotation: the form relates to how the speaker presented information (outside top-10 categories)
+t2_helpful,task2_annotation,binary,0/1,Manual annotation: speaker was trying to be helpful to the hearer (outside top-10 categories)
+t2_easierHearer,task2_annotation,binary,0/1,Manual annotation: the form made the information easier to understand for the hearer (outside top-10 categories)
+t2_emphasis,task2_annotation,binary,0/1,Manual annotation: speaker was placing emphasis on the information (outside top-10 categories)
+t2_failure,task2_annotation,binary,0/1,Manual annotation: the response reflects a communicative failure or misunderstanding (outside top-10 categories)
+t2_badInfo,task2_annotation,binary,0/1,Manual annotation: the speaker provided bad or incorrect information (outside top-10 categories)
+t2_other,task2_annotation,binary,0/1,Manual annotation: other / uncategorized response (outside top-10 categories)
+t3_appropriate,task3_multiplechoice,binary,0/1,"Task 3 option selected: ""because it was the appropriate level of detail in the situation"""
+t3_giveMore,task3_multiplechoice,binary,0/1,"Task 3 option selected: ""to give as much information as possible"""
+t3_avoidFalse,task3_multiplechoice,binary,0/1,"Task 3 option selected: ""to avoid saying something that might be false"""
+t3_didntKnow,task3_multiplechoice,binary,0/1,"Task 3 option selected: ""because the speaker didn't know the exact information"""
+t3_easierUnderstand,task3_multiplechoice,binary,0/1,"Task 3 option selected: ""to make the information easier to understand"""
+t3_soundSmart,task3_multiplechoice,binary,0/1,"Task 3 option selected: ""to sound smart"""
+t3_soundEasygoing,task3_multiplechoice,binary,0/1,"Task 3 option selected: ""to sound easy-going"""
+t3_easierSpeaker,task3_multiplechoice,binary,0/1,"Task 3 option selected: ""because it was easier for the speaker"""
+t3_tooMuchInf,task3_multiplechoice,binary,0/1,"Task 3 option selected: ""to avoid giving too much information"""
+t3_none,task3_multiplechoice,binary,0/1,"Task 3 option selected: ""none of these"""
+t4_speakerType,task4_followup,integer,1–7,Numeric code for participant's characterisation of the speaker's general communication style (follow-up question; exploratory variable)
