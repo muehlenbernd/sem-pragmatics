@@ -26,11 +26,13 @@ results.
 The joint listener marginalizes over strategies when computing the knowledge
 posterior, so the context c also shifts the knowledge inference:
 
-    P(k | u, c) ∝ P(k) · Σ_m P(m) · χ_m(c, k, u)
+    P(k | u, c) ∝ P(k) · χ_t(k, u) · Σ_m P(m) · χ_m(c, k, u)
 
-The strategy posterior P(m | k, u, c) is unchanged. Because every strategy
-selects only truthful utterances (χ_m implies χ_t), the explicit truthfulness
-factor is redundant and is omitted.
+The strategy posterior P(m | k, u, c) is unchanged. For Case Study 1 every
+strategy selects only truthful utterances (χ_m implies χ_t), so the χ_t factor
+is always 1 and the formula reduces to `P(k) · Σ_m P(m) · χ_m(c, k, u)` — as
+the paper writes it. The code includes χ_t explicitly for correctness in
+scenarios where χ_m need not imply χ_t.
 
 ## Flat-prior example
 
