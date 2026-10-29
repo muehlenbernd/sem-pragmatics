@@ -12,7 +12,7 @@ Re-run anytime: this fully regenerates the notebook file.
 import json
 import os
 
-NB = os.path.join(os.path.dirname(__file__), "..", "notebooks", "sem_paper.ipynb")
+NB = os.path.join(os.path.dirname(__file__), "..", "..", "notebooks", "sem_paper.ipynb")
 
 
 def _src(text):

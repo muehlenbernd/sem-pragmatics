@@ -7,7 +7,7 @@ detected by the SENTINEL marker, before re-appending).
 import json
 import os
 
-NB_PATH = os.path.join(os.path.dirname(__file__), "..", "notebooks", "sem_demo.ipynb")
+NB_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "notebooks", "sem_demo.ipynb")
 SENTINEL = "SEC3-REPRO-BLOCK"  # marker placed in the section header cell
 
 
