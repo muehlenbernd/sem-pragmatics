@@ -2,6 +2,7 @@
 scripts/exp2_access_split.py
 ============================
 Session G analysis: access-split listener (Steps 1, 4, 5).
+Addendum (Step 4d): consistent-prior sweep and LS π*.
 
 Step 2 (follow-up fraction fix) lives in scripts/exp2_knowledge_followup.py.
 
@@ -142,7 +143,7 @@ def ci_includes_zero(delta_ci: Dict, a: str, v: str, c: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Build predictions for all models
+# Build predictions for all models (original Steps 4a/4b, inconsistent prior)
 # ---------------------------------------------------------------------------
 
 def build_predictions(base: "SEMScenario", split: AccessSplitScenario,
@@ -152,7 +153,9 @@ def build_predictions(base: "SEMScenario", split: AccessSplitScenario,
       reading1:  vanilla SEM P(k_p) .5 → 1
       reading2:  Δ = 0
       4a_pi:     uniform split at π ∈ {.25, .5, .75, .9, 1.0}
+                 (Exp.1 baseline fixed at P(k_p)=0.5; superseded by Step 4d)
       4b:        attribute-specific (comp ↔ access=s_p; ped/like ↔ prior h)
+                 (Exp.1 baseline fixed at P(k_p)=0.5)
     """
     # Exp. 1 baseline: SEM P(k_p)=0.5
     e1_bal = split.evaluate_all_exp1(pi=0.5)
@@ -171,7 +174,7 @@ def build_predictions(base: "SEMScenario", split: AccessSplitScenario,
         a: {v: {c: 0.0 for c in CTXS} for v in FORMS} for a in ATTRS
     }
 
-    # 4a: uniform split at various π
+    # 4a: uniform split at various π (Exp.1 fixed at 0.5 — inconsistent prior)
     for pi in [0.25, 0.5, 0.75, 0.9, 1.0]:
         key = f"4a_pi{int(pi*100):03d}"
         e2_pi = split.evaluate_all_exp2(pi=pi)
@@ -194,6 +197,256 @@ def build_predictions(base: "SEMScenario", split: AccessSplitScenario,
     }
 
     return preds
+
+
+# ---------------------------------------------------------------------------
+# Step 4d — Consistent priors: analytical alpha values and helpers
+# ---------------------------------------------------------------------------
+
+# Expected values from the Session G addendum (staged, ω=.5, flat P(m)).
+# Every Δ_pred(π) = α_i·(1−π).
+ANALYTICAL_ALPHA = {
+    "model_i": {
+        "a_comp": {"v_prc": {"c_HP": -1.0,     "c_LP": -1.0},
+                   "v_apx": {"c_HP": -0.5,     "c_LP":  0.0}},
+        "a_ped":  {"v_prc": {"c_HP": -0.5,     "c_LP": -0.5},
+                   "v_apx": {"c_HP": -1.0/6,   "c_LP": -1.0/6}},
+        "a_like": {"v_prc": {"c_HP":  0.0,     "c_LP":  0.0},
+                   "v_apx": {"c_HP": -1.0/6,   "c_LP":  1.0/12}},
+    },
+    "model_ii": {
+        "a_comp": {"v_prc": {"c_HP":  0.0,     "c_LP":  0.0},
+                   "v_apx": {"c_HP":  0.5,     "c_LP":  1.0}},
+        "a_ped":  {"v_prc": {"c_HP": -0.5,     "c_LP": -0.5},
+                   "v_apx": {"c_HP": -1.0/6,   "c_LP": -1.0/6}},
+        "a_like": {"v_prc": {"c_HP":  0.0,     "c_LP":  0.0},
+                   "v_apx": {"c_HP": -1.0/6,   "c_LP":  1.0/12}},
+    },
+}
+
+
+def build_predictions_consistent_i(split: AccessSplitScenario, pi: float) -> Dict:
+    """Model (i): uniform split, consistent priors. Both exps use the same π."""
+    e1 = split.evaluate_all_exp1(pi=pi)
+    e2 = split.evaluate_all_exp2(pi=pi)
+    return {
+        a: {v: {c: round(e2[a][v][c] - e1[a][v][c], 9)
+                for c in CTXS} for v in FORMS} for a in ATTRS
+    }
+
+
+def build_predictions_consistent_ii(split: AccessSplitScenario, pi: float) -> Dict:
+    """Model (ii): attribute-specific split, consistent priors.
+    Comp: φ_K on access (s_p in Exp.2 → pi_eff=1.0).
+    Ped/like: φ_K on prior knowledge h (pi).
+    Exp.1 baseline uses the same π for all attributes.
+    """
+    e1      = split.evaluate_all_exp1(pi=pi)
+    e2_comp = split.evaluate_all_exp2(pi=1.0)   # comp: s_p → φ_K(k_p,·)
+    e2_ph   = split.evaluate_all_exp2(pi=pi)    # ped/like: prior h
+    return {
+        "a_comp": {v: {c: round(e2_comp["a_comp"][v][c] - e1["a_comp"][v][c], 9)
+                       for c in CTXS} for v in FORMS},
+        "a_ped":  {v: {c: round(e2_ph["a_ped"][v][c]   - e1["a_ped"][v][c],  9)
+                       for c in CTXS} for v in FORMS},
+        "a_like": {v: {c: round(e2_ph["a_like"][v][c]  - e1["a_like"][v][c], 9)
+                       for c in CTXS} for v in FORMS},
+    }
+
+
+def verify_consistent_analytical(split: AccessSplitScenario) -> Dict:
+    """
+    For both models and π ∈ {0.05, 0.5, 0.95}, check that Δ(π) = α_i·(1−π).
+    π=0.0 is excluded: P(k_p)=0 makes v_prc impossible in Exp.1 (0/0 posterior),
+    causing the code to return E_L=0 rather than the limiting α_i·1 value.
+    This boundary degeneracy does not affect the sweep (which uses the analytical
+    formula directly) or any realistic parameter setting.
+    Returns {"diffs": [...], "n_diffs": int, "pass": bool, "boundary_note": str}.
+    """
+    tol = 1e-6
+    diffs = []
+    for pi in [0.05, 0.5, 0.95]:
+        fns = [
+            ("model_i",  build_predictions_consistent_i(split, pi)),
+            ("model_ii", build_predictions_consistent_ii(split, pi)),
+        ]
+        for model_name, pred in fns:
+            for a in ATTRS:
+                for v in FORMS:
+                    for c in CTXS:
+                        alpha    = ANALYTICAL_ALPHA[model_name][a][v][c]
+                        expected = alpha * (1.0 - pi)
+                        got      = pred[a][v][c]
+                        if abs(got - expected) > tol:
+                            diffs.append({
+                                "model": model_name, "pi": pi,
+                                "attr": a, "form": v, "ctx": c,
+                                "expected": round(expected, 9),
+                                "got":      round(got, 9),
+                                "diff":     round(got - expected, 9),
+                            })
+    boundary_note = (
+        "At π=0.0 exactly: P(k_p)=0 makes v_prc an impossible utterance in Exp.1 "
+        "(normalization Z=0, code returns E_L=0 instead of limiting value). "
+        "Formula verified at π=0.001 independently; boundary does not affect sweep."
+    )
+    return {
+        "diffs": diffs,
+        "n_diffs": len(diffs),
+        "pass": len(diffs) == 0,
+        "boundary_note": boundary_note,
+    }
+
+
+def step4d_consistent_priors(split: AccessSplitScenario, delta_ci: Dict,
+                              e1_df: pd.DataFrame, e2_df: pd.DataFrame) -> Dict:
+    """Step 4d: consistent-prior sweep and LS π*, 95 % boot CI, per-cell tables."""
+    rng = np.random.default_rng(42)
+
+    obs_arr = np.array([
+        delta_ci[a][v][c]["delta"]
+        for a in ATTRS for v in FORMS for c in CTXS
+    ]).reshape(3, 2, 2)
+
+    pi_grid = np.round(np.arange(0.0, 1.001, 0.05), 4)
+
+    def ls_pi_cons(obs: np.ndarray, alpha: np.ndarray) -> float:
+        """π* = 1 − ⟨obs, α⟩/⟨α, α⟩, clipped to [0, 1]."""
+        aa = float(np.dot(alpha.ravel(), alpha.ravel()))
+        if aa == 0:
+            return float("nan")
+        x = float(np.dot(obs.ravel(), alpha.ravel()) / aa)
+        return float(np.clip(1.0 - x, 0.0, 1.0))
+
+    results = {}
+
+    for model_name, alpha_dict in [
+        ("model_i",  ANALYTICAL_ALPHA["model_i"]),
+        ("model_ii", ANALYTICAL_ALPHA["model_ii"]),
+    ]:
+        alpha_arr = np.array([
+            alpha_dict[a][v][c]
+            for a in ATTRS for v in FORMS for c in CTXS
+        ]).reshape(3, 2, 2)
+
+        # RMSE sweep
+        sweep_rows = []
+        for pi in pi_grid:
+            dp = alpha_arr * (1.0 - float(pi))
+            rmse_all = float(np.sqrt(np.mean((obs_arr - dp) ** 2)))
+            per_attr_rmse = {
+                a: round(float(np.sqrt(np.mean(
+                    (obs_arr[ai] - dp[ai]) ** 2))), 4)
+                for ai, a in enumerate(ATTRS)
+            }
+            sweep_rows.append({
+                "pi": float(pi),
+                "rmse_overall": round(rmse_all, 4),
+                "rmse_per_attr": per_attr_rmse,
+            })
+
+        # LS π*
+        pi_star_overall  = ls_pi_cons(obs_arr, alpha_arr)
+        pi_star_per_attr = {
+            a: ls_pi_cons(obs_arr[ai], alpha_arr[ai])
+            for ai, a in enumerate(ATTRS)
+        }
+
+        # Bootstrap CI (seed 42, 2000 iter, same resampling as other steps)
+        boot = {"overall": [], **{a: [] for a in ATTRS}}
+        for _ in range(2000):
+            obs_b = np.zeros((3, 2, 2))
+            for ai, a in enumerate(ATTRS):
+                raw_col = [k for k, vv in RATTR_MAP.items() if vv == a][0]
+                for vi, v in enumerate(FORMS):
+                    form_val = {vv: k for k, vv in FORM_MAP.items()}[v]
+                    for ci, c in enumerate(CTXS):
+                        ctx_val = {vv: k for k, vv in CTX_MAP.items()}[c]
+                        g1 = e1_df[(e1_df.form == form_val) &
+                                   (e1_df.context == ctx_val)]
+                        g2 = e2_df[(e2_df.form == form_val) &
+                                   (e2_df.context == ctx_val)]
+                        s1 = g1.sample(n=len(g1), replace=True,
+                                       random_state=int(rng.integers(2 ** 31)))[raw_col]
+                        s2 = g2.sample(n=len(g2), replace=True,
+                                       random_state=int(rng.integers(2 ** 31)))[raw_col]
+                        obs_b[ai, vi, ci] = (normalize_likert(float(s2.mean()))
+                                             - normalize_likert(float(s1.mean())))
+            boot["overall"].append(ls_pi_cons(obs_b, alpha_arr))
+            for ai, a in enumerate(ATTRS):
+                boot[a].append(ls_pi_cons(obs_b[ai], alpha_arr[ai]))
+
+        ci_pi = {}
+        for key in ["overall"] + ATTRS:
+            arr_b = np.array(boot[key])
+            pv = pi_star_overall if key == "overall" else pi_star_per_attr[key]
+            ci_pi[key] = {
+                "pi_star": (round(pv, 4) if not math.isnan(pv) else None),
+                "ci_lo":   round(float(np.percentile(arr_b,  2.5)), 3),
+                "ci_hi":   round(float(np.percentile(arr_b, 97.5)), 3),
+            }
+
+        # Per-cell tables at overall π* and ped π*
+        tables = {}
+        for label, pv in [
+            ("overall_pi_star", pi_star_overall),
+            ("ped_pi_star",     pi_star_per_attr.get("a_ped", float("nan"))),
+        ]:
+            if pv is None or (isinstance(pv, float) and math.isnan(pv)):
+                tables[label] = None
+                continue
+            dp = alpha_arr * (1.0 - pv)
+            cells_tbl = []
+            for ai, a in enumerate(ATTRS):
+                for vi, v in enumerate(FORMS):
+                    for ci, c in enumerate(CTXS):
+                        dpv   = float(dp[ai, vi, ci])
+                        do    = delta_ci[a][v][c]["delta"]
+                        ci_lo = delta_ci[a][v][c]["ci_lo"]
+                        ci_hi = delta_ci[a][v][c]["ci_hi"]
+                        ag    = sign_agree(dpv, do, ci_lo, ci_hi)
+                        cells_tbl.append({
+                            "attr": a, "form": v, "ctx": c,
+                            "delta_obs":  do,
+                            "ci_lo": ci_lo, "ci_hi": ci_hi,
+                            "delta_pred": round(dpv, 6),
+                            "agree": ag,
+                        })
+            obs_f  = np.array([ce["delta_obs"]  for ce in cells_tbl])
+            pred_f = np.array([ce["delta_pred"] for ce in cells_tbl])
+            rmse_v = float(np.sqrt(np.mean((obs_f - pred_f) ** 2)))
+            n_ag   = sum(1 for ce in cells_tbl if ce["agree"] is True)
+            n_to   = sum(1 for ce in cells_tbl if ce["agree"] is not None)
+
+            per_attr_m = {}
+            for a in ATTRS:
+                o_a = np.array([ce["delta_obs"]  for ce in cells_tbl if ce["attr"] == a])
+                p_a = np.array([ce["delta_pred"] for ce in cells_tbl if ce["attr"] == a])
+                per_attr_m[a] = {
+                    "rmse":    round(float(np.sqrt(np.mean((o_a - p_a) ** 2))), 4),
+                    "n_agree": sum(1 for ce in cells_tbl if ce["attr"] == a
+                                   and ce["agree"] is True),
+                    "n_total": sum(1 for ce in cells_tbl if ce["attr"] == a
+                                   and ce["agree"] is not None),
+                }
+
+            tables[label] = {
+                "pi":              round(pv, 4),
+                "cells":           cells_tbl,
+                "rmse_overall":    round(rmse_v, 4),
+                "n_agree_overall": n_ag,
+                "n_total_overall": n_to,
+                "per_attr":        per_attr_m,
+            }
+
+        results[model_name] = {
+            "alpha_arr": alpha_arr.tolist(),
+            "sweep":     sweep_rows,
+            "ls_pi":     ci_pi,
+            "tables":    tables,
+        }
+
+    return results
 
 
 # ---------------------------------------------------------------------------
@@ -267,7 +520,7 @@ def model_metrics(pred: Dict, delta_ci: Dict) -> Dict:
 
 
 # ---------------------------------------------------------------------------
-# Step 4c — sweep and least-squares π
+# Step 4c — sweep and least-squares π (inconsistent-prior baseline, superseded)
 # ---------------------------------------------------------------------------
 
 def sweep_pi(split: AccessSplitScenario, delta_ci: Dict,
@@ -275,6 +528,7 @@ def sweep_pi(split: AccessSplitScenario, delta_ci: Dict,
     """
     Sweep π from 0 to 1 in steps of .05.  Find LS π* per attribute and overall.
     Bootstrap CI (seed 42, 2000 iter) for π*.
+    NOTE: uses fixed Exp.1 baseline P(k_p)=0.5 — superseded by step4d_consistent_priors.
     """
     rng    = np.random.default_rng(42)
     pi_grid = np.round(np.arange(0.0, 1.001, 0.05), 4)
@@ -515,18 +769,33 @@ def write_report(results: Dict, path: str) -> None:
     L("- Split model also predicts a large *competence drop* for the precise form "
       "(reading 1 and 4b; not observed in data → sign mismatch).")
     L("- For likeability φ_K = 0 for both h states: Δ_pred is identical across all "
-      "π values and all split models.")
-    L("- Least-squares π: see Step 4c; comp and ped pull in opposite directions "
-      "(comp wants high π, ped wants low–mid π).")
+      "π values and all split models (original 4a); in the consistent-prior model (4d), "
+      "Δ ∝ (1−π) even for likeability because the strategy posteriors differ between exps.")
+    L("- Consistent-prior LS π* (4d): see Step 4d; comp and ped remain in tension "
+      "under model (i); model (ii) resolves comp at the cost of a slightly worse fit for ped.")
     sw5 = results.get("step5")
     if sw5:
-        pooled_ped = sw5.get("pooled", {}).get("a_ped", {})
+        pooled_ped  = sw5.get("pooled", {}).get("a_ped", {})
+        pooled_comp = sw5.get("pooled", {}).get("a_comp", {})
         if "delta_norm" in pooled_ped:
             L(f"- Within-participant check (pooled, precise form): infoAvail − knewExact "
-              f"for pedantry Δ_norm = {pooled_ped['delta_norm']} "
+              f"pedantry Δ_norm = {pooled_ped['delta_norm']} "
               f"(p = {pooled_ped['p']} {pstar(pooled_ped['p'])}); "
-              f"competence Δ_norm = {sw5['pooled']['a_comp']['delta_norm']} "
-              f"(p = {sw5['pooled']['a_comp']['p']} {pstar(sw5['pooled']['a_comp']['p'])}).")
+              f"competence Δ_norm = {pooled_comp.get('delta_norm', '?')} "
+              f"(p = {pooled_comp.get('p', '?')} {pstar(pooled_comp.get('p', 1))}).")
+        for exp_name in ["exp1", "exp2"]:
+            exp_d  = sw5.get(exp_name, {})
+            ep     = exp_d.get("a_ped", {})
+            ec     = exp_d.get("a_comp", {})
+            ni, nk = exp_d.get("n_infoAvail", "?"), exp_d.get("n_knewExact", "?")
+            if ep.get("skipped"):
+                L(f"- Within-participant check ({exp_name}): {ep.get('reason')}.")
+            elif "delta_norm" in ep:
+                L(f"- Within-participant check ({exp_name}, n={ni}+{nk}): "
+                  f"pedantry Δ_norm = {ep['delta_norm']} ({ep['direction']}, "
+                  f"p = {ep['p']} {pstar(ep['p'])}); "
+                  f"competence Δ_norm = {ec.get('delta_norm', '?')} "
+                  f"(p = {ec.get('p', '?')} {pstar(ec.get('p', 1))}).")
     L("")
 
     # ---- Step 0 ----
@@ -559,7 +828,9 @@ def write_report(results: Dict, path: str) -> None:
             L(f"- {d['var']}/{d['attr']}: expected {d['expected']}, got {d['got']}")
         L("")
     L(f"φ_K(·, a_like) = 0 for all knowledge states: **{phi['phi_K_like_all_zero']}**. "
-      "Likeability Δ_pred is therefore identical for all π and for 4b.\n")
+      "Likeability Δ_pred is therefore identical for all π and for 4b "
+      "(original inconsistent-prior models). Note: in the consistent-prior model (4d), "
+      "likeability Δ is non-zero for v_apx cells because the strategy posteriors depend on k.\n")
 
     # ---- Step 2 ----
     h2("Step 2 — Corrected fractions for follow-up (d)")
@@ -621,7 +892,8 @@ def write_report(results: Dict, path: str) -> None:
 
     for pi in [0.25, 0.5, 0.75, 0.9, 1.0]:
         key = f"4a_pi{int(pi*100):03d}"
-        model_table(key, results[key], f"4a: uniform split, π = {pi:.2f}")
+        note = " *(superseded: inconsistent priors — see Step 4d)*" if pi != 0.5 else ""
+        model_table(key, results[key], f"4a: uniform split, π = {pi:.2f}{note}")
 
     model_table("4b", results["4b"],
                 "4b: attribute-specific split (comp ↔ access; ped/like ↔ prior h)")
@@ -648,8 +920,8 @@ def write_report(results: Dict, path: str) -> None:
     summary_row("4a_pi050", "4a π=.50")
     summary_row("4b",       "4b attr-split")
 
-    # ---- Step 4c sweep ----
-    h2("Step 4c — Sweep: RMSE as a function of π")
+    # ---- Step 4c sweep (superseded) ----
+    h2("Step 4c — Sweep: RMSE as a function of π *(superseded: inconsistent priors — see Step 4d)*")
     sw4c = results["sweep4c"]
     row("π", "RMSE overall", "RMSE a_comp", "RMSE a_like", "RMSE a_ped")
     sep(5)
@@ -660,13 +932,118 @@ def write_report(results: Dict, path: str) -> None:
             f"{sr['rmse_per_attr']['a_like']:.4f}",
             f"{sr['rmse_per_attr']['a_ped']:.4f}")
     L("")
-    h3("Least-squares π*")
+    h3("Least-squares π* *(superseded)*")
     row("scope", "π*", "95% boot CI")
     sep(3)
     for key in ["overall"] + ATTRS:
         ci = sw4c["ls_pi"][key]
         row(key, f"{ci['pi_star']:.3f}",
             f"[{ci['ci_lo']:.3f}, {ci['ci_hi']:.3f}]")
+    L("")
+
+    # ---- Step 4d — Consistent priors ----
+    h2("Step 4d — Consistent priors (Addendum)")
+    L("*One listener per π: Exp.1 = vanilla SEM P(k_p)=π; Exp.2 = split model P(h_p)=π. "
+      "Δ_pred(π) = α_i·(1−π) for both models.*\n")
+
+    verify = results.get("step4d_verify", {})
+    if verify.get("pass"):
+        L("**Analytical check: PASS.** "
+          "Δ(π) = α_i·(1−π) for all 24 cells and both models (tol 1e-6).\n")
+    else:
+        n_fail = verify.get("n_diffs", "?")
+        L(f"**Analytical check: FAIL** — {n_fail} cell(s) differ:\n")
+        for d in verify.get("diffs", []):
+            L(f"- {d['model']} / {d['attr']} / {d['form']} / {d['ctx']} "
+              f"at π={d['pi']}: expected {d['expected']}, got {d['got']} "
+              f"(diff {d['diff']})")
+        L("")
+
+    step4d = results.get("step4d", {})
+
+    for model_name, model_label in [
+        ("model_i",
+         "Model (i): uniform split — φ_K on h for all attributes"),
+        ("model_ii",
+         "Model (ii): attribute-specific — comp: φ_K on s_p; ped/like: φ_K on h"),
+    ]:
+        mr = step4d.get(model_name, {})
+        h3(model_label)
+
+        L("**RMSE sweep (π from 0 to 1, step .05):**\n")
+        row("π", "RMSE overall", "RMSE a_comp", "RMSE a_like", "RMSE a_ped")
+        sep(5)
+        for sr in mr.get("sweep", []):
+            row(f"{sr['pi']:.2f}",
+                f"{sr['rmse_overall']:.4f}",
+                f"{sr['rmse_per_attr'].get('a_comp', '?'):.4f}",
+                f"{sr['rmse_per_attr'].get('a_like', '?'):.4f}",
+                f"{sr['rmse_per_attr'].get('a_ped', '?'):.4f}")
+        L("")
+
+        L("**Least-squares π*:**\n")
+        row("scope", "π*", "95% boot CI")
+        sep(3)
+        for key in ["overall"] + ATTRS:
+            ci = mr.get("ls_pi", {}).get(key, {})
+            pv = ci.get("pi_star")
+            pv_str = f"{pv:.3f}" if pv is not None else "—"
+            cl, ch = ci.get("ci_lo"), ci.get("ci_hi")
+            cl_str = f"{cl:.3f}" if cl is not None else "?"
+            ch_str = f"{ch:.3f}" if ch is not None else "?"
+            row(key, pv_str, f"[{cl_str}, {ch_str}]")
+        L("")
+
+        for label, heading in [
+            ("overall_pi_star", "Per-cell table at overall π*"),
+            ("ped_pi_star",     "Per-cell table at pedantry π*"),
+        ]:
+            tbl = mr.get("tables", {}).get(label)
+            if tbl is None:
+                L(f"*{heading}: not available (π* undefined).*\n")
+                continue
+            h3(f"{heading} (π = {tbl['pi']:.3f}) — {model_label}")
+            row("attr", "form", "ctx", "Δ_obs", "95% CI", "Δ_pred", "agree")
+            sep(7)
+            for ce in tbl["cells"]:
+                ci_str = f"[{ce['ci_lo']:.3f}, {ce['ci_hi']:.3f}]"
+                row(ce["attr"], ce["form"], ce["ctx"],
+                    f"{ce['delta_obs']:.3f}", ci_str,
+                    f"{ce['delta_pred']:.3f}", fmt_agree(ce["agree"]))
+            L("")
+            row("attr", "RMSE", "n agree / total")
+            sep(3)
+            for a in ATTRS:
+                pa = tbl["per_attr"][a]
+                row(a, f"{pa['rmse']:.4f}", f"{pa['n_agree']}/{pa['n_total']}")
+            row("overall", f"{tbl['rmse_overall']:.4f}",
+                f"{tbl['n_agree_overall']}/{tbl['n_total_overall']}")
+            L("")
+
+    # Step 4d summary table
+    h3("Step 4d summary table (at overall π*)")
+    row("model", "π*", "comp agree", "comp RMSE", "like agree", "like RMSE",
+        "ped agree", "ped RMSE", "overall agree", "overall RMSE")
+    sep(10)
+    for model_name, model_label in [
+        ("model_i",  "4d (i) uniform"),
+        ("model_ii", "4d (ii) attr-split"),
+    ]:
+        mr   = step4d.get(model_name, {})
+        pv   = mr.get("ls_pi", {}).get("overall", {}).get("pi_star")
+        tbl  = mr.get("tables", {}).get("overall_pi_star")
+        if tbl is None:
+            row(model_label, f"{pv}", "—", "—", "—", "—", "—", "—", "—", "—")
+        else:
+            parts = [model_label,
+                     f"{pv:.3f}" if pv is not None else "—"]
+            for a in ATTRS:
+                pa = tbl["per_attr"][a]
+                parts.append(f"{pa['n_agree']}/{pa['n_total']}")
+                parts.append(f"{pa['rmse']:.4f}")
+            parts.append(f"{tbl['n_agree_overall']}/{tbl['n_total_overall']}")
+            parts.append(f"{tbl['rmse_overall']:.4f}")
+            row(*parts)
     L("")
 
     # ---- Step 5 ----
@@ -691,6 +1068,22 @@ def write_report(results: Dict, path: str) -> None:
                       f"t({r.get('df')}) = {r.get('t')}, p = {r.get('p')} {pstar(r.get('p', 1))}\n")
     else:
         L("*Not run.*\n")
+
+    # ---- Step 6 ----
+    h2("Step 6 — Commits")
+    L("| Commit | Content |")
+    L("|---|---|")
+    L("| 273e31c | Steps 0–3: access-split listener (`sem/access_split.py`), 22 tests, "
+      "`docs/access_split.md`, Step 2 fraction fix in `exp2_knowledge_followup.py` + JSON, "
+      "`data/README.md`, `README.md`, `CLAUDE.md` |")
+    L("| 14729b7 | Steps 4–5: `scripts/exp2_access_split.py`, "
+      "`data/cs1_experiment/processed/exp2_access_split_cs1.json` |")
+    L("| *pending* | Step 4d (Addendum): updated `scripts/exp2_access_split.py`, "
+      "`data/cs1_experiment/processed/exp2_access_split_cs1.json`, "
+      "`docs/access_split.md` |")
+    L("")
+    L("Branch: `session-g-access-split` (from `main`).")
+    L("")
 
     with open(path, "w") as fh:
         fh.write("\n".join(lines))
@@ -735,7 +1128,7 @@ def main():
         print(f"  Warning: could not load follow-up JSON ({e}); Step 2 values unavailable")
         step2_frac = {}
 
-    # Step 4: build predictions
+    # Step 4: build predictions (original, inconsistent-prior baseline)
     print("Step 4: building predictions...")
     preds = build_predictions(base, split, d1_json)
 
@@ -748,9 +1141,22 @@ def main():
     print("Step 4: bootstrap shift fractions (2000 iter × all models)...")
     boot_fracs = bootstrap_shift_fracs(preds, delta_ci, e1_df, e2_df)
 
-    # Step 4c: sweep
+    # Step 4c: sweep (inconsistent prior, superseded by 4d)
     print("Step 4c: sweep and least-squares pi* (2000 bootstrap iter)...")
     sweep_result = sweep_pi(split, delta_ci, e1_df, e2_df)
+
+    # Step 4d: consistent-prior analysis
+    print("Step 4d: verifying analytical values...")
+    step4d_verify = verify_consistent_analytical(split)
+    if not step4d_verify["pass"]:
+        print(f"  WARNING: {step4d_verify['n_diffs']} analytical discrepancies found!")
+        for d in step4d_verify["diffs"]:
+            print(f"    {d}")
+    else:
+        print("  Analytical check: PASS.")
+
+    print("Step 4d: consistent-prior sweep and LS pi* (2000 bootstrap iter)...")
+    step4d_result = step4d_consistent_priors(split, delta_ci, e1_df, e2_df)
 
     # Step 5: within-participant check
     print("Step 5: within-participant check...")
@@ -763,6 +1169,8 @@ def main():
         "delta_ci":            delta_ci,
         "boot_fracs":          boot_fracs,
         "sweep4c":             sweep_result,
+        "step4d_verify":       step4d_verify,
+        "step4d":              step4d_result,
         "step5":               step5,
     }
     for key, m in metrics.items():
