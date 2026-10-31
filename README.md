@@ -57,18 +57,20 @@ sem-pragmatics/
 │   ├── joint_listener.py         # Joint-listener comparison
 │   ├── within_condition_check.py # Within-condition robustness check
 │   ├── compute_empirical_means.py
-│   ├── exp2_knowledge_test.py    # Exp. 2 held-out test (D1)
-│   ├── exp2_knowledge_followup.py # Session F follow-up analyses (a)–(d)
-│   ├── exp2_access_split.py      # Session G access-split analysis
+│   ├── exp2_knowledge_test.py    # Exp. 2 held-out test (D1: mixed models)
+│   ├── exp2_knowledge_followup.py # Session F: follow-up analyses (a)–(d)
+│   ├── exp2_access_split.py      # Session G: extended model (access split, π sweep)
+│   ├── exp2_section44.py         # Reproduce every §4.4 number (30-value table + Step 2b)
 │   └── dev/                      # Helpers that rebuild notebooks
 ├── data/                         # Experimental data
 │   ├── README.md                 # Data description
 │   └── cs1_experiment/           # Data for Case Study 1
 ├── docs/                         # Design notes
 │   ├── staged_vs_joint.md        # Staged vs. joint listener
-│   ├── access_split.md           # Access-split listener model
+│   ├── access_split.md           # Extended model: three knowledge states
 │   └── impact_mapping_rationale.md
-├── notebooks/                    # Interactive examples
+├── notebooks/                    # Paper reproduction notebook
+│   ├── sem_paper.ipynb           # Reproduces all analyses and figures
 │   └── sem_demo.ipynb
 ├── tests/                        # Pytest suite (79 tests, 2 slow)
 ├── figures/                      # Generated figures (gitignored)
@@ -152,6 +154,27 @@ discussion of where the paper addresses the two options (Section 5.5).
 
 ---
 
+## Experiment 2 Analyses (Section 4.4)
+
+§4.4 of the paper is a held-out test on Experiment 2 (N = 390, speaker seen
+consulting a source). All §4.4 numbers can be reproduced in two ways:
+
+- **Script:** `PYTHONPATH=. python scripts/exp2_section44.py` — prints the
+  30-value table and exits non-zero on any mismatch.
+- **Notebook:** the "Section 4.4 — Experiment 2" section at the end of
+  `notebooks/sem_paper.ipynb` calls the same function and shows the table.
+
+Related scripts:
+- `scripts/exp2_knowledge_test.py` — mixed models (D1 analysis).
+- `scripts/exp2_knowledge_followup.py` — Session F follow-up (reason-class
+  shares, precise-form motivation comparisons).
+- `scripts/exp2_access_split.py` — extended model: access split, consistent-
+  prior sweep over π, least-squares π* fit.
+
+The extended model is documented in `docs/access_split.md`.
+
+---
+
 ## Running Tests
 
 ```bash
@@ -179,10 +202,11 @@ the link will be added after peer review.
 
 ## Use of Generative AI
 
-The model was first implemented without AI assistance. Claude (Anthropic) was
+The model was first implemented without AI assistance; Claude (Anthropic) was
 used to revise and reorganize the code and to set up the repository. The
-authors checked all code, analyses and results and take full responsibility
-for them.
+authors checked all code, analyses, and results, and take full responsibility
+for them. See the companion paper for the statement regarding the manuscript
+text.
 
 ---
 

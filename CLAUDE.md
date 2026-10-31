@@ -20,7 +20,11 @@ sem/            core package: model.py (SEMScenario), fit.py (metrics),
                 impact_derivation.py (phi tables from Task 2), plotting.py,
                 access_split.py (AccessSplitScenario — Session G)
 case_studies/   cs1_imprecision.py (main case study), cs2_pragmatic_violations.py
-scripts/        runnable analyses (run from the repo root)
+scripts/        runnable analyses (run from the repo root):
+                exp2_knowledge_test.py, exp2_knowledge_followup.py,
+                exp2_access_split.py, exp2_section44.py (§4.4 reproduction),
+                run_comparison.py, joint_listener.py, within_condition_check.py,
+                compute_empirical_means.py
 scripts/dev/    helpers that (re)build the notebooks; not part of the analysis
 data/cs1_experiment/
     processed/  experiment1.csv (N = 362), experiment2.csv (N = 390), derived JSON
@@ -77,7 +81,6 @@ background or behind a `slow` pytest marker; never block the test suite on them.
 
 ## Git
 
-- Session G work is on branch `session-g-access-split` (from `main`).
 - One commit per task step, with a clear message. Run the tests first.
 - **Never push, merge, force-push or rewrite history.** The owner reviews and
   pushes.
