@@ -1225,6 +1225,23 @@
           0.3333333333333333
         ]
       ],
+      "D_bal": [
+        [
+          0.25,
+          0.5
+        ],
+        [
+          -0.08333333333333333,
+          0.041666666666666685
+        ],
+        [
+          0.16666666666666666,
+          0.16666666666666666
+        ]
+      ],
+      "is_linear": true,
+      "max_linear_error": 0.0,
+      "closed_form_applies": true,
       "frac": 0.0261,
       "frac_pct": 2.6,
       "frac_ci": [
@@ -1236,13 +1253,23 @@
         11.8
       ],
       "p0_closed": 0.9739,
-      "p0_grid": 0.97,
       "p0_ci_from_frac": [
         0.882,
         1.0
       ],
-      "is_linear": true,
-      "max_linear_error": 0.0,
+      "upper_bound_at_boundary": true,
+      "frac_bal": 0.0522,
+      "frac_bal_pct": 5.2,
+      "frac_bal_ci": [
+        -0.15,
+        0.236
+      ],
+      "frac_bal_ci_pct": [
+        -15.0,
+        23.6
+      ],
+      "p0_bal_closed": 0.9478,
+      "p0_grid": 0.97,
       "per_cell": [
         {
           "attr": "a_comp",
@@ -1287,8 +1314,7 @@
           "sign_match": false
         }
       ],
-      "n_sign_match": 2,
-      "upper_bound_at_boundary": true
+      "n_sign_match": 2
     },
     "joint": {
       "D": [
@@ -1305,24 +1331,51 @@
           0.3333333333333333
         ]
       ],
-      "frac": 0.0261,
-      "frac_pct": 2.6,
-      "frac_ci": [
-        -0.075,
-        0.118
-      ],
-      "frac_ci_pct": [
-        -7.5,
-        11.8
-      ],
-      "p0_closed": 0.9739,
-      "p0_grid": 0.99,
-      "p0_ci_from_frac": [
-        0.882,
-        1.0
+      "D_bal": [
+        [
+          0.375,
+          0.6
+        ],
+        [
+          -0.125,
+          0.04999999999999999
+        ],
+        [
+          0.25,
+          0.2
+        ]
       ],
       "is_linear": false,
       "max_linear_error": 0.133965517241,
+      "closed_form_applies": false,
+      "frac": 0.0261,
+      "frac_pct": 2.6,
+      "frac_ci": [
+        -0.073,
+        0.117
+      ],
+      "frac_ci_pct": [
+        -7.3,
+        11.7
+      ],
+      "p0_closed": 0.9739,
+      "p0_ci_from_frac": [
+        0.883,
+        1.0
+      ],
+      "upper_bound_at_boundary": true,
+      "frac_bal": 0.0419,
+      "frac_bal_pct": 4.2,
+      "frac_bal_ci": [
+        -0.117,
+        0.189
+      ],
+      "frac_bal_ci_pct": [
+        -11.7,
+        18.9
+      ],
+      "p0_bal_closed": 0.9581,
+      "p0_grid": 0.99,
       "per_cell": [
         {
           "attr": "a_comp",
@@ -1367,8 +1420,7 @@
           "sign_match": false
         }
       ],
-      "n_sign_match": 2,
-      "upper_bound_at_boundary": true
+      "n_sign_match": 2
     }
   }
 }

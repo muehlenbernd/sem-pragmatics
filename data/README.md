@@ -11,10 +11,10 @@ Two experiments, both using a 2 × 2 between-subjects design
 (context: high / low precision required × utterance form: precise / approximate).
 Six pre-tested scenarios, one item per participant.
 
-| Experiment | N | Knowledge condition | knowledge (CSV) |
-|---|---|---|---|
-| Exp. 1 | 362 | Base (knowledge not established) | `unknown` |
-| Exp. 2 | 390 | Established (speaker told exact value) | `knowl` |
+| Experiment | N | Knowledge condition | knowledge (CSV) | Recruitment note |
+|---|---|---|---|---|
+| Exp. 1 | 362 | Base (knowledge not established) | `unknown` | |
+| Exp. 2 | 390 | Established (speaker told exact value) | `knowl` | 391 recruited; one repeat participant removed before analysis |
 
 ### Tasks
 
@@ -50,7 +50,9 @@ data/
     │   ├── variant_comparison_cs1.json  # Variant-comparison metrics
     │   ├── joint_listener_cs1.json      # Staged vs. joint comparison
     │   ├── within_condition_check_cs1.json
-    │   └── exp2_knowledge_test_cs1.json # D1 analysis results
+    │   ├── exp2_knowledge_test_cs1.json     # D1 analysis results
+    │   ├── exp2_knowledge_followup_cs1.json # Session F follow-up (a)–(d)
+    │   └── exp2_access_split_cs1.json       # Session G access-split analysis
     └── analysis/
         └── README.md                # Note: R scripts not included in this repo
 ```

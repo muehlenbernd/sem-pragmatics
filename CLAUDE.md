@@ -17,7 +17,8 @@ everything committed here is visible to reviewers.
 ```
 sem/            core package: model.py (SEMScenario), fit.py (metrics),
                 comparison.py (variant comparison, parameter sampling),
-                impact_derivation.py (phi tables from Task 2), plotting.py
+                impact_derivation.py (phi tables from Task 2), plotting.py,
+                access_split.py (AccessSplitScenario — Session G)
 case_studies/   cs1_imprecision.py (main case study), cs2_pragmatic_violations.py
 scripts/        runnable analyses (run from the repo root)
 scripts/dev/    helpers that (re)build the notebooks; not part of the analysis
@@ -26,7 +27,7 @@ data/cs1_experiment/
     codebook.csv
 notebooks/      sem_paper.ipynb (reproduces the paper), sem_demo.ipynb
 tests/          pytest suite
-docs/           design notes
+docs/           design notes (staged_vs_joint.md, access_split.md, ...)
 revision/       UNTRACKED (gitignored): revision planning files, session briefs,
                 results reports. Read them; never commit them.
 ```
@@ -76,7 +77,7 @@ background or behind a `slow` pytest marker; never block the test suite on them.
 
 ## Git
 
-- Work on the branch `meaning-revision`, never on `main`.
+- Session G work is on branch `session-g-access-split` (from `main`).
 - One commit per task step, with a clear message. Run the tests first.
 - **Never push, merge, force-push or rewrite history.** The owner reviews and
   pushes.
