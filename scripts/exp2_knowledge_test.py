@@ -808,7 +808,7 @@ def write_report(results: Dict, path: str) -> None:
         f"{s5_jt['p0_sampled_mean']} ± {s5_jt['p0_sampled_sd']}")
     lines.append("\n**Interpretation:** P0* is the base prior most consistent with "
                  "the observed near-null Exp.2 − Exp.1 shifts.\n")
-    lines.append("> **Roland's judgment needed:** how to frame P0* relative to the grid-search "
+    lines.append("> **Judgment needed:** how to frame P0* relative to the grid-search "
                  "optimum (§4.2 footnote); whether the CI is tight enough to make a strong claim.\n")
 
     # Pedantry risk
@@ -831,7 +831,7 @@ def write_report(results: Dict, path: str) -> None:
         "\n*Author (2025) reports lower pedantry in knowledge condition for both forms; "
         "SEM predicts zero change for precise form.*\n"
     )
-    lines.append("> **Roland's judgment needed:** whether the precise-cell pedantry difference "
+    lines.append("> **Judgment needed:** whether the precise-cell pedantry difference "
                  "is the ELM effect or an artefact; how to frame it in §4 / §5.4.\n")
 
     with open(path, "w") as fh:
